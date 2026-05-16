@@ -1,0 +1,926 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>pasta3d — interactive</title>
+<script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js"></script>
+<style>
+  body { margin: 0; background: #1a140d; color: #e8dcc4; font: 13px/1.4 -apple-system, sans-serif; }
+  #canvas-holder { position: fixed; inset: 0; }
+  #panel {
+    position: fixed; top: 12px; left: 12px; padding: 12px 14px;
+    background: rgba(28, 22, 14, 0.9); border: 1px solid #4a3a26; border-radius: 6px;
+    width: 300px; max-height: calc(100vh - 24px); overflow-y: auto;
+  }
+  #panel h1 { margin: 0 0 8px; font-size: 13px; font-weight: 600; }
+  #panel h2 { margin: 12px 0 4px; font-size: 11px; font-weight: 600; color: #d4ae6e; text-transform: uppercase; letter-spacing: 0.06em; }
+  #panel .row { margin: 6px 0; }
+  #panel label { display: block; font-size: 11px; color: #b8a482; }
+  #panel input[type=range] { width: 100%; }
+  #panel select { width: 100%; padding: 6px 8px; background: #2a2218; color: #e8dcc4;
+    border: 1px solid #5a4a30; border-radius: 4px; font: inherit; }
+  #panel .val { color: #fff8e5; font-variant-numeric: tabular-nums; }
+  #panel .hint { margin-top: 10px; font-size: 11px; color: #8a7560; }
+  #panel button { padding: 6px 8px; background: #382c1c; color: #e8dcc4;
+    border: 1px solid #6a5638; border-radius: 4px; cursor: pointer; font: inherit; }
+  #panel button:hover { background: #4a3a24; }
+  #panel .shapes { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-top: 4px; }
+  #panel .shapes button.active { background: #6e5230; border-color: #b08850; color: #fff8e5; }
+  .shape-group { display: none; }
+  .shape-group.active { display: block; }
+</style>
+</head>
+<body>
+<div id="canvas-holder"></div>
+<div id="panel">
+  <h1>pasta3d — parametric pasta</h1>
+
+  <h2>Shape</h2>
+  <div class="shapes" id="shape-buttons">
+    <button data-shape="fusilli">Fusilli</button>
+    <button data-shape="cavatappi">Cavatappi</button>
+    <button data-shape="penne">Penne</button>
+    <button data-shape="farfalle">Farfalle</button>
+    <button data-shape="macaroni">Macaroni</button>
+    <button data-shape="gemelli">Gemelli</button>
+    <button data-shape="mafaldine">Mafaldine</button>
+    <button data-shape="gnocchi">Gnocchi</button>
+    <button data-shape="spaghetti">Spaghetti</button>
+    <button data-shape="rotelle">Rotelle</button>
+  </div>
+
+  <!-- Fusilli -->
+  <div class="shape-group" data-shape="fusilli">
+    <h2>Fusilli</h2>
+    <div class="row"><label>length: <span class="val" id="v-fu_len"></span></label>
+      <input type="range" id="fu_len" min="1.5" max="8" step="0.05" value="3.5"></div>
+    <div class="row"><label>blade radius: <span class="val" id="v-fu_r"></span></label>
+      <input type="range" id="fu_r" min="0.2" max="2.5" step="0.01" value="1.0"></div>
+    <div class="row"><label>blade thickness: <span class="val" id="v-fu_thk"></span></label>
+      <input type="range" id="fu_thk" min="0.02" max="0.4" step="0.005" value="0.12"></div>
+    <div class="row"><label>twist (turns): <span class="val" id="v-fu_tw"></span></label>
+      <input type="range" id="fu_tw" min="0.5" max="6" step="0.05" value="2.5"></div>
+    <div class="row"><label>blades: <span class="val" id="v-fu_n"></span></label>
+      <input type="range" id="fu_n" min="2" max="5" step="1" value="4"></div>
+    <div class="row"><label>edge curl: <span class="val" id="v-fu_curl"></span></label>
+      <input type="range" id="fu_curl" min="0" max="1" step="0.01" value="0.4"></div>
+  </div>
+
+  <!-- Cavatappi -->
+  <div class="shape-group" data-shape="cavatappi">
+    <h2>Cavatappi</h2>
+    <div class="row"><label>helix radius: <span class="val" id="v-ca_R"></span></label>
+      <input type="range" id="ca_R" min="0.3" max="3" step="0.01" value="1.2"></div>
+    <div class="row"><label>helix pitch: <span class="val" id="v-ca_p"></span></label>
+      <input type="range" id="ca_p" min="0.1" max="2" step="0.01" value="0.55"></div>
+    <div class="row"><label>tube radius: <span class="val" id="v-ca_r"></span></label>
+      <input type="range" id="ca_r" min="0.05" max="1.0" step="0.005" value="0.35"></div>
+    <div class="row"><label>turns: <span class="val" id="v-ca_t"></span></label>
+      <input type="range" id="ca_t" min="1" max="8" step="0.05" value="3.5"></div>
+    <div class="row"><label>ridges (n): <span class="val" id="v-ca_rn"></span></label>
+      <input type="range" id="ca_rn" min="0" max="24" step="1" value="10"></div>
+    <div class="row"><label>ridge amp: <span class="val" id="v-ca_ra"></span></label>
+      <input type="range" id="ca_ra" min="0" max="0.25" step="0.005" value="0.06"></div>
+  </div>
+
+  <!-- Penne -->
+  <div class="shape-group" data-shape="penne">
+    <h2>Penne</h2>
+    <div class="row"><label>radius: <span class="val" id="v-pe_r"></span></label>
+      <input type="range" id="pe_r" min="0.3" max="2" step="0.01" value="0.9"></div>
+    <div class="row"><label>length: <span class="val" id="v-pe_L"></span></label>
+      <input type="range" id="pe_L" min="1" max="8" step="0.05" value="4"></div>
+    <div class="row"><label>cut angle (rad): <span class="val" id="v-pe_a"></span></label>
+      <input type="range" id="pe_a" min="0" max="1.0" step="0.005" value="0.6"></div>
+    <div class="row"><label>ridges (n): <span class="val" id="v-pe_rn"></span></label>
+      <input type="range" id="pe_rn" min="0" max="40" step="1" value="14"></div>
+    <div class="row"><label>ridge amp: <span class="val" id="v-pe_ra"></span></label>
+      <input type="range" id="pe_ra" min="0" max="0.15" step="0.002" value="0.04"></div>
+  </div>
+
+
+  <!-- Farfalle -->
+  <div class="shape-group" data-shape="farfalle">
+    <h2>Farfalle</h2>
+    <div class="row"><label>pinch zone amp: <span class="val" id="v-fa_pa"></span></label>
+      <input type="range" id="fa_pa" min="0" max="3" step="0.01" value="1.0"></div>
+    <div class="row"><label>wing fold amp: <span class="val" id="v-fa_wf"></span></label>
+      <input type="range" id="fa_wf" min="0" max="3" step="0.01" value="1.0"></div>
+    <div class="row"><label>edge ripple amp: <span class="val" id="v-fa_er"></span></label>
+      <input type="range" id="fa_er" min="0" max="3" step="0.01" value="1.0"></div>
+    <div class="row"><label>height amp: <span class="val" id="v-fa_h"></span></label>
+      <input type="range" id="fa_h" min="0" max="3" step="0.01" value="1.0"></div>
+  </div>
+
+  <!-- Macaroni -->
+  <div class="shape-group" data-shape="macaroni">
+    <h2>Macaroni</h2>
+    <div class="row"><label>bend radius: <span class="val" id="v-ma_R"></span></label>
+      <input type="range" id="ma_R" min="0.5" max="4" step="0.01" value="1.6"></div>
+    <div class="row"><label>tube radius: <span class="val" id="v-ma_r"></span></label>
+      <input type="range" id="ma_r" min="0.1" max="1.0" step="0.005" value="0.45"></div>
+    <div class="row"><label>arc angle (rad): <span class="val" id="v-ma_arc"></span></label>
+      <input type="range" id="ma_arc" min="0.4" max="3.14" step="0.01" value="2.0"></div>
+    <div class="row"><label>ridges (n): <span class="val" id="v-ma_rn"></span></label>
+      <input type="range" id="ma_rn" min="0" max="30" step="1" value="0"></div>
+    <div class="row"><label>ridge amp: <span class="val" id="v-ma_ra"></span></label>
+      <input type="range" id="ma_ra" min="0" max="0.2" step="0.005" value="0.05"></div>
+  </div>
+
+  <!-- Gemelli -->
+  <div class="shape-group" data-shape="gemelli">
+    <h2>Gemelli</h2>
+    <div class="row"><label>length: <span class="val" id="v-ge_L"></span></label>
+      <input type="range" id="ge_L" min="2" max="10" step="0.05" value="6"></div>
+    <div class="row"><label>strand offset: <span class="val" id="v-ge_o"></span></label>
+      <input type="range" id="ge_o" min="0.2" max="1.5" step="0.005" value="0.55"></div>
+    <div class="row"><label>strand radius: <span class="val" id="v-ge_r"></span></label>
+      <input type="range" id="ge_r" min="0.1" max="0.8" step="0.005" value="0.35"></div>
+    <div class="row"><label>twist (turns): <span class="val" id="v-ge_t"></span></label>
+      <input type="range" id="ge_t" min="0.5" max="6" step="0.05" value="2.2"></div>
+    <div class="row"><label>taper: <span class="val" id="v-ge_tp"></span></label>
+      <input type="range" id="ge_tp" min="0" max="0.6" step="0.01" value="0.2"></div>
+  </div>
+
+  <!-- Mafaldine -->
+  <div class="shape-group" data-shape="mafaldine">
+    <h2>Mafaldine</h2>
+    <div class="row"><label>length (j max): <span class="val" id="v-mf_jmax"></span></label>
+      <input type="range" id="mf_jmax" min="30" max="300" step="1" value="150"></div>
+    <div class="row"><label>edge ripple amp: <span class="val" id="v-mf_amp"></span></label>
+      <input type="range" id="mf_amp" min="0" max="3" step="0.01" value="1.0"></div>
+    <div class="row"><label>edge band width (i): <span class="val" id="v-mf_band"></span></label>
+      <input type="range" id="mf_band" min="2" max="14" step="0.1" value="6"></div>
+    <div class="row"><label>thickness: <span class="val" id="v-mf_thk"></span></label>
+      <input type="range" id="mf_thk" min="0" max="2" step="0.01" value="0.5"></div>
+  </div>
+
+  <!-- Gnocchi -->
+  <div class="shape-group" data-shape="gnocchi">
+    <h2>Gnocchi</h2>
+    <div class="row"><label>length: <span class="val" id="v-gn_L"></span></label>
+      <input type="range" id="gn_L" min="0.8" max="2.5" step="0.01" value="1.4"></div>
+    <div class="row"><label>radius: <span class="val" id="v-gn_R"></span></label>
+      <input type="range" id="gn_R" min="0.4" max="1.5" step="0.01" value="0.8"></div>
+    <div class="row"><label>end taper: <span class="val" id="v-gn_tp"></span></label>
+      <input type="range" id="gn_tp" min="0" max="0.6" step="0.005" value="0.18"></div>
+    <div class="row"><label>thumb depth: <span class="val" id="v-gn_td"></span></label>
+      <input type="range" id="gn_td" min="0" max="0.6" step="0.005" value="0.32"></div>
+    <div class="row"><label>thumb width: <span class="val" id="v-gn_tw"></span></label>
+      <input type="range" id="gn_tw" min="0.15" max="1.0" step="0.005" value="0.45"></div>
+    <div class="row"><label>ridges (n): <span class="val" id="v-gn_rn"></span></label>
+      <input type="range" id="gn_rn" min="0" max="20" step="1" value="9"></div>
+    <div class="row"><label>ridge amp: <span class="val" id="v-gn_ra"></span></label>
+      <input type="range" id="gn_ra" min="0" max="0.18" step="0.002" value="0.05"></div>
+  </div>
+
+  <!-- Spaghetti -->
+  <div class="shape-group" data-shape="spaghetti">
+    <h2>Spaghetti</h2>
+    <div class="row"><label>length: <span class="val" id="v-sp_L"></span></label>
+      <input type="range" id="sp_L" min="3" max="20" step="0.05" value="12"></div>
+    <div class="row"><label>radius: <span class="val" id="v-sp_r"></span></label>
+      <input type="range" id="sp_r" min="0.05" max="0.6" step="0.005" value="0.18"></div>
+    <div class="row"><label>droop (sag): <span class="val" id="v-sp_sag"></span></label>
+      <input type="range" id="sp_sag" min="0" max="3" step="0.01" value="0.6"></div>
+    <div class="row"><label>wobble amp: <span class="val" id="v-sp_wa"></span></label>
+      <input type="range" id="sp_wa" min="0" max="1.5" step="0.005" value="0.25"></div>
+    <div class="row"><label>wobble freq: <span class="val" id="v-sp_wf"></span></label>
+      <input type="range" id="sp_wf" min="0" max="6" step="0.05" value="1.4"></div>
+    <div class="row"><label>wobble phase: <span class="val" id="v-sp_wp"></span></label>
+      <input type="range" id="sp_wp" min="0" max="6.2832" step="0.01" value="1.0"></div>
+  </div>
+
+  <!-- Rotelle -->
+  <div class="shape-group" data-shape="rotelle">
+    <h2>Rotelle</h2>
+    <div class="row"><label>spoke spike (exp): <span class="val" id="v-ro_se"></span></label>
+      <input type="range" id="ro_se" min="10" max="100" step="1" value="50"></div>
+    <div class="row"><label>spoke length amp: <span class="val" id="v-ro_sl"></span></label>
+      <input type="range" id="ro_sl" min="0" max="3" step="0.01" value="1.5"></div>
+    <div class="row"><label>rim ripple amp: <span class="val" id="v-ro_rr"></span></label>
+      <input type="range" id="ro_rr" min="0" max="0.15" step="0.001" value="0.03"></div>
+    <div class="row"><label>thickness (depth): <span class="val" id="v-ro_h"></span></label>
+      <input type="range" id="ro_h" min="0.2" max="2" step="0.01" value="1.0"></div>
+  </div>
+
+  <div style="margin-top: 14px;">
+    <button id="reset" style="width: 100%;">Reset current shape</button>
+  </div>
+
+  <div class="hint">Drag to orbit · scroll to zoom</div>
+</div>
+
+<script>
+/*
+ * pasta3d — parametric pasta surfaces.
+ *
+ * Each shape is defined by a parametric map (i, j) → (x, y, z) over an
+ * (ISTEPS+1) × (JSTEPS+1) lattice.  Shapes that need a Frenet-frame sweep
+ * (cavatappi) reuse the same structure as conch3d.  The whole mesh is
+ * recentered and uniformly scaled to fit a target world size, so every
+ * shape renders at a comparable scale regardless of its parameters.
+ *
+ * Equations (informal — based on Legendre, Pasta by Design, 2011):
+ *
+ *   Fusilli (helical ribbon, N blades):
+ *     for blade k = 0..N-1:
+ *       angle(t) = 2πk/N + 2π·twist·t/L
+ *       w ∈ [-1, 1]   (across the blade)
+ *       r(w) = R · (1 - curl·w²)        // mild curve-back at the edges
+ *       λ(t,w) = ( r(w)·cos(angle), t, r(w)·sin(angle) )
+ *               + thk · ŵ_perp(angle)   // give the blade a small thickness
+ *
+ *   Cavatappi (tube around a helix):
+ *     γ(t) = ( R cos t, p·t, R sin t )
+ *     T,N,B = Frenet frame on γ
+ *     ρ(θ) = r · (1 + amp · sin(n θ))
+ *     λ(t,θ) = γ(t) + ρ(θ)·(cos θ · N + sin θ · B)
+ *
+ *   Penne (cylinder cut by two parallel oblique planes):
+ *     u ∈ [0, 1], θ ∈ [0, 2π]
+ *     ρ(θ) = r · (1 + amp · sin(n θ))
+ *     λ = ( ρ cos θ, u·L + r·tan(α)·cos θ, ρ sin θ )
+ *     // Both ends share the same cosine offset → parallel oblique cuts.
+ *
+ *   Orecchiette (dome with apex dimple):
+ *     φ ∈ [0, φmax], θ ∈ [0, 2π]
+ *     dimple(φ) = depth · exp(-(φ/σ)²)
+ *     R_eff(φ,θ) = R · (1 + tex_amp·sin(tex_n·θ))
+ *     x = R_eff·sin φ · cos θ
+ *     y = R_eff·sin φ · sin θ
+ *     z = R_eff·(cos φ - dimple(φ))      // top is pulled inward
+ *
+ *   Farfalle (bowtie — pinched ribbon with pleats and ruffled edges):
+ *     u, v ∈ [-1, 1]
+ *     P(u) = 1 - depth · exp(-(u/σ)²)            // pinch profile
+ *     ruffle(u) = 1 + ruf · sin(6π u) · (1-P(u)) // edges flutter at the wings
+ *     x = u · Lx
+ *     y = v · Ly · P(u) · ruffle(u)
+ *     z = pleat_amp · sin(freq·π·u) · (1 - P(u)) * |v|^(0.6)
+ *     // pleats concentrate at the central pinch and flare outward in v.
+ */
+
+const SHAPE_PARAMS = {
+  fusilli:     ['fu_len','fu_r','fu_thk','fu_tw','fu_n','fu_curl'],
+  cavatappi:   ['ca_R','ca_p','ca_r','ca_t','ca_rn','ca_ra'],
+  penne:       ['pe_r','pe_L','pe_a','pe_rn','pe_ra'],
+  farfalle:    ['fa_pa','fa_wf','fa_er','fa_h'],
+  macaroni:    ['ma_R','ma_r','ma_arc','ma_rn','ma_ra'],
+  gemelli:     ['ge_L','ge_o','ge_r','ge_t','ge_tp'],
+  mafaldine:   ['mf_jmax','mf_amp','mf_band','mf_thk'],
+  gnocchi:     ['gn_L','gn_R','gn_tp','gn_td','gn_tw','gn_rn','gn_ra'],
+  spaghetti:   ['sp_L','sp_r','sp_sag','sp_wa','sp_wf','sp_wp'],
+  rotelle:     ['ro_se','ro_sl','ro_rr','ro_h'],
+};
+
+const DEFAULTS = {
+  fu_len: 3.5, fu_r: 1.0, fu_thk: 0.12, fu_tw: 2.5, fu_n: 4, fu_curl: 0.4,
+  ca_R: 1.2, ca_p: 0.55, ca_r: 0.35, ca_t: 3.5, ca_rn: 10, ca_ra: 0.06,
+  pe_r: 0.9, pe_L: 4, pe_a: 0.6, pe_rn: 14, pe_ra: 0.04,
+  fa_pa: 1.0, fa_wf: 1.0, fa_er: 1.0, fa_h: 1.0,
+  ma_R: 1.6, ma_r: 0.45, ma_arc: 2.0, ma_rn: 0, ma_ra: 0.05,
+  ge_L: 6, ge_o: 0.55, ge_r: 0.35, ge_t: 2.2, ge_tp: 0.2,
+  mf_jmax: 150, mf_amp: 1.0, mf_band: 6, mf_thk: 0.5,
+  gn_L: 1.4, gn_R: 0.8, gn_tp: 0.18, gn_td: 0.32, gn_tw: 0.45, gn_rn: 9, gn_ra: 0.05,
+  sp_L: 12, sp_r: 0.18, sp_sag: 0.6, sp_wa: 0.25, sp_wf: 1.4, sp_wp: 1.0,
+  ro_se: 50, ro_sl: 1.5, ro_rr: 0.03, ro_h: 1.0,
+};
+
+const vals = { ...DEFAULTS };
+let currentShape = 'fusilli';
+let dirty = true;
+
+const allSliderIds = Array.from(document.querySelectorAll('#panel input[type=range]')).map(el => el.id);
+allSliderIds.forEach(id => {
+  const el = document.getElementById(id);
+  const out = document.getElementById('v-' + id);
+  const update = () => {
+    vals[id] = parseFloat(el.value);
+    const isInt = (id === 'fu_n' || id === 'ca_rn' || id === 'pe_rn'
+                   || id === 'ma_rn' || id === 'gn_rn' || id === 'mf_jmax'
+                   || id === 'ro_se');
+    out.textContent = isInt ? vals[id].toFixed(0) : vals[id].toFixed(3);
+    dirty = true;
+  };
+  el.addEventListener('input', update);
+  update();
+});
+
+const shapeButtons = document.querySelectorAll('#shape-buttons button');
+const showShapeGroup = (name) => {
+  document.querySelectorAll('.shape-group').forEach(g => {
+    g.classList.toggle('active', g.dataset.shape === name);
+  });
+  shapeButtons.forEach(b => b.classList.toggle('active', b.dataset.shape === name));
+};
+shapeButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    currentShape = btn.dataset.shape;
+    showShapeGroup(currentShape);
+    dirty = true;
+  });
+});
+showShapeGroup(currentShape);
+
+document.getElementById('reset').addEventListener('click', () => {
+  SHAPE_PARAMS[currentShape].forEach(id => {
+    const el = document.getElementById(id);
+    el.value = DEFAULTS[id];
+    el.dispatchEvent(new Event('input'));
+  });
+});
+
+// Stop wheel scroll over the panel from zooming the camera.
+const panelEl = document.getElementById('panel');
+let uiDrag = false, uiHover = false;
+panelEl.addEventListener('pointerdown', () => { uiDrag = true; });
+panelEl.addEventListener('pointerenter', () => { uiHover = true; });
+panelEl.addEventListener('pointerleave', () => { uiHover = false; });
+window.addEventListener('pointerup', () => { uiDrag = false; });
+window.addEventListener('pointercancel', () => { uiDrag = false; });
+window.addEventListener('wheel', (e) => {
+  if (panelEl.contains(e.target)) e.stopPropagation();
+}, { capture: true, passive: true });
+
+const TARGET_SIZE = 600;
+
+// ---------- shape builders ----------
+// Each builder returns { meshes: [ { ISTEPS, JSTEPS, verts: [x,y,z,...] } ] }.
+
+function buildFusilli(v) {
+  const ISTEPS = 220, JSTEPS = 16;
+  const N = Math.round(v.fu_n);
+  const L = v.fu_len, R = v.fu_r, thk = v.fu_thk, twist = v.fu_tw, curl = v.fu_curl;
+  const meshes = [];
+  for (let k = 0; k < N; k++) {
+    const phi0 = (2 * Math.PI * k) / N;
+    const verts = [];
+    for (let i = 0; i <= ISTEPS; i++) {
+      const t = (i / ISTEPS) * L - L / 2;
+      const angle = phi0 + (2 * Math.PI * twist * (t + L / 2)) / L;
+      const ca = Math.cos(angle), sa = Math.sin(angle);
+      // Perpendicular direction (around the axis), used to give blade thickness.
+      const pa = angle + Math.PI / 2;
+      const cpa = Math.cos(pa), spa = Math.sin(pa);
+      for (let j = 0; j <= JSTEPS; j++) {
+        // u along blade radial direction in [-1,1], s across blade thickness in [-1,1]
+        // We unfold (j) into both: top half = outer face, bottom half = inner face,
+        // wrapping at the edges to make a closed solid blade.
+        let u, s;
+        const half = JSTEPS / 2;
+        if (j <= half) {
+          u = (j / half) * 2 - 1;       // -1 → +1
+          s = +1;
+        } else {
+          u = ((JSTEPS - j) / half) * 2 - 1; // +1 → -1
+          s = -1;
+        }
+        const r = R * (1 - curl * u * u);
+        const x = r * u * ca + thk * s * cpa;
+        const y = t;
+        const z = r * u * sa + thk * s * spa;
+        verts.push(x, y, z);
+      }
+    }
+    meshes.push({ ISTEPS, JSTEPS, verts });
+  }
+  return { meshes };
+}
+
+function buildCavatappi(v) {
+  const ISTEPS = 480, JSTEPS = 32;
+  const R = v.ca_R, p = v.ca_p, r = v.ca_r, turns = v.ca_t;
+  const n = Math.round(v.ca_rn), amp = v.ca_ra;
+  const tMin = 0, tMax = 2 * Math.PI * turns;
+  const verts = [];
+  for (let i = 0; i <= ISTEPS; i++) {
+    const t = tMin + (tMax - tMin) * i / ISTEPS;
+    const ct = Math.cos(t), st = Math.sin(t);
+    // γ(t) = (R cos t, p·t, R sin t)
+    const gx = R * ct, gy = p * t, gz = R * st;
+    // γ'(t) = (-R sin t, p, R cos t)
+    let Tx = -R * st, Ty = p, Tz = R * ct;
+    let Tm = Math.hypot(Tx, Ty, Tz); Tx/=Tm; Ty/=Tm; Tz/=Tm;
+    // γ''(t) = (-R cos t, 0, -R sin t) — points inward, length R
+    let Nx = -ct, Ny = 0, Nz = -st;
+    // B = T × N
+    let Bx = Ty*Nz - Tz*Ny, By = Tz*Nx - Tx*Nz, Bz = Tx*Ny - Ty*Nx;
+    let Bm = Math.hypot(Bx, By, Bz); Bx/=Bm; By/=Bm; Bz/=Bm;
+    for (let j = 0; j <= JSTEPS; j++) {
+      const theta = (2 * Math.PI * j) / JSTEPS;
+      const ridge = (n > 0) ? (1 + amp * Math.sin(n * theta)) : 1;
+      const rho = r * ridge;
+      const cT = Math.cos(theta), sT = Math.sin(theta);
+      const x = gx + rho * (cT * Nx + sT * Bx);
+      const y = gy + rho * (cT * Ny + sT * By);
+      const z = gz + rho * (cT * Nz + sT * Bz);
+      verts.push(x, y, z);
+    }
+  }
+  return { meshes: [{ ISTEPS, JSTEPS, verts }] };
+}
+
+function buildPenne(v) {
+  const ISTEPS = 80, JSTEPS = 96;
+  const r = v.pe_r, L = v.pe_L, alpha = v.pe_a;
+  const n = Math.round(v.pe_rn), amp = v.pe_ra;
+  const tana = Math.tan(alpha);
+  const verts = [];
+  for (let i = 0; i <= ISTEPS; i++) {
+    const u = i / ISTEPS;
+    for (let j = 0; j <= JSTEPS; j++) {
+      const theta = (2 * Math.PI * j) / JSTEPS;
+      const ridge = (n > 0) ? (1 + amp * Math.sin(n * theta)) : 1;
+      const rho = r * ridge;
+      const ct = Math.cos(theta), st = Math.sin(theta);
+      const x = rho * ct;
+      const y = u * L + r * tana * ct - L / 2;
+      const z = rho * st;
+      verts.push(x, y, z);
+    }
+  }
+  return { meshes: [{ ISTEPS, JSTEPS, verts }] };
+}
+
+
+function buildFarfalle(v) {
+  // Legendre, Pasta by Design, p.63.  Domain (i,j) ∈ [0,80] × [0,80].
+  //
+  //   α(i)   = sin((7i+16)π/40)
+  //   β(i,j) = 7j/16 + 4·sin(iπ/80)·sin((j-10)π/12)
+  //   γ(i,j) = 10·cos((i+80)π/80)·sin((j+110)π/100)^9
+  //   η(i,j) = 7j/16 - 4·sin(iπ/80) - α(i)·sin((10-j)π/20)
+  //
+  //   Π = 3i/8 + if(20 ≤ i ≤ 60, 7·sin((i+40)π/40)^3 · sin((j+110)π/100)^9,
+  //                              γ(i,j))
+  //   Θ = if(10 ≤ j ≤ 70, β(i,j) - 4·sin(iπ/80)·sin((70-j)π/120),
+  //         if(j < 10, η(i,j), η(i, 80-j)))
+  //   K = 3·sin((i+10)π/20) · sin(jπ/80)^1.5
+  //
+  // Sliders rescale the four "feature" terms — the central pinch zone in Π,
+  // the wing fold (γ outside the pinch zone), the edge crenellation in Θ
+  // (the η/sin terms near j=0 and j=80), and the K height multiplier.
+  const ISTEPS = 200, JSTEPS = 200;
+  const paMul = v.fa_pa, wfMul = v.fa_wf, erMul = v.fa_er, hMul = v.fa_h;
+  const verts = [];
+  for (let ii = 0; ii <= ISTEPS; ii++) {
+    const i = (ii / ISTEPS) * 80;
+    const sini80 = Math.sin(i * Math.PI / 80);
+    const alpha  = Math.sin((7 * i + 16) * Math.PI / 40);
+    const pinchZone = (i >= 20 && i <= 60);
+    for (let jj = 0; jj <= JSTEPS; jj++) {
+      const j = (jj / JSTEPS) * 80;
+      // ---- Π ----
+      let Pi = 3 * i / 8;
+      if (pinchZone) {
+        const s1 = Math.sin((i + 40) * Math.PI / 40);
+        const s2 = Math.sin((j + 110) * Math.PI / 100);
+        Pi += paMul * 7 * (s1*s1*s1) * Math.pow(s2, 9);
+      } else {
+        const gamma = 10 * Math.cos((i + 80) * Math.PI / 80)
+                    * Math.pow(Math.sin((j + 110) * Math.PI / 100), 9);
+        Pi += wfMul * gamma;
+      }
+      // ---- Θ ----
+      const etaAt = (jj_eta) => {
+        return 7 * jj_eta / 16
+             - 4 * sini80
+             - alpha * Math.sin((10 - jj_eta) * Math.PI / 20);
+      };
+      let Th;
+      if (j >= 10 && j <= 70) {
+        const beta = 7 * j / 16 + 4 * sini80 * Math.sin((j - 10) * Math.PI / 12);
+        Th = beta - erMul * 4 * sini80 * Math.sin((70 - j) * Math.PI / 120);
+      } else if (j < 10) {
+        Th = 7 * j / 16 - 4 * sini80 - erMul * alpha * Math.sin((10 - j) * Math.PI / 20);
+      } else {
+        const j2 = 80 - j;
+        Th = 7 * j2 / 16 - 4 * sini80 - erMul * alpha * Math.sin((10 - j2) * Math.PI / 20);
+      }
+      // ---- K ----
+      const K = hMul * 3 * Math.sin((i + 10) * Math.PI / 20)
+                * Math.pow(Math.sin(j * Math.PI / 80), 1.5);
+      // (Π, Θ, K) → (x, y, z) — book maps Π→x, Θ→y, K→z; we route K to y so
+      // the height is the global up axis (consistent with the other shapes).
+      verts.push(Pi, K, Th);
+    }
+  }
+  return { meshes: [{ ISTEPS, JSTEPS, verts }] };
+}
+
+function buildMacaroni(v) {
+  const ISTEPS = 240, JSTEPS = 36;
+  const R = v.ma_R, r = v.ma_r, arc = v.ma_arc;
+  const n = Math.round(v.ma_rn), amp = v.ma_ra;
+  const verts = [];
+  // γ(t) = (R cos t, R sin t, 0), t ∈ [-arc/2, arc/2]
+  for (let i = 0; i <= ISTEPS; i++) {
+    const t = -arc / 2 + arc * i / ISTEPS;
+    const ct = Math.cos(t), st = Math.sin(t);
+    const gx = R * ct, gy = R * st, gz = 0;
+    // T = (-sin t, cos t, 0); N (toward center) = (-cos t, -sin t, 0); B = T×N = (0,0,1)
+    const Nx = -ct, Ny = -st, Nz = 0;
+    const Bx = 0, By = 0, Bz = 1;
+    for (let j = 0; j <= JSTEPS; j++) {
+      const theta = (2 * Math.PI * j) / JSTEPS;
+      const ridge = (n > 0) ? (1 + amp * Math.sin(n * theta)) : 1;
+      const rho = r * ridge;
+      const cT = Math.cos(theta), sT = Math.sin(theta);
+      const x = gx + rho * (cT * Nx + sT * Bx);
+      const y = gy + rho * (cT * Ny + sT * By);
+      const z = gz + rho * (cT * Nz + sT * Bz);
+      verts.push(x, y, z);
+    }
+  }
+  return { meshes: [{ ISTEPS, JSTEPS, verts }] };
+}
+
+function buildGemelli(v) {
+  // Two tubes that wind around each other along a shared axis.
+  // strand k ∈ {0,1}: γ_k(t) = (offset·cos(2π·turns·t/L + kπ), t, offset·sin(...))
+  const ISTEPS = 320, JSTEPS = 24;
+  const L = v.ge_L, off = v.ge_o, r = v.ge_r, turns = v.ge_t, taper = v.ge_tp;
+  const meshes = [];
+  for (let k = 0; k < 2; k++) {
+    const verts = [];
+    for (let i = 0; i <= ISTEPS; i++) {
+      const u = i / ISTEPS;                  // 0..1
+      const t = u * L - L / 2;
+      const ang = 2 * Math.PI * turns * u + k * Math.PI;
+      const ca = Math.cos(ang), sa = Math.sin(ang);
+      const gx = off * ca, gy = t, gz = off * sa;
+      // dγ/dt: d/dt of ang = 2π·turns/L
+      const w = 2 * Math.PI * turns / L;
+      let Tx = -off * sa * w, Ty = 1, Tz = off * ca * w;
+      let Tm = Math.hypot(Tx, Ty, Tz); Tx/=Tm; Ty/=Tm; Tz/=Tm;
+      // N points inward toward axis: (-cos ang, 0, -sin ang)
+      const Nx = -ca, Ny = 0, Nz = -sa;
+      // B = T × N
+      let Bx = Ty*Nz - Tz*Ny, By = Tz*Nx - Tx*Nz, Bz = Tx*Ny - Ty*Nx;
+      let Bm = Math.hypot(Bx, By, Bz); Bx/=Bm; By/=Bm; Bz/=Bm;
+      // Taper: shrink the tube near both ends.
+      const ends = 4 * u * (1 - u);            // 0 at ends, 1 in the middle
+      const rEff = r * (1 - taper * (1 - ends));
+      for (let j = 0; j <= JSTEPS; j++) {
+        const theta = (2 * Math.PI * j) / JSTEPS;
+        const cT = Math.cos(theta), sT = Math.sin(theta);
+        const x = gx + rEff * (cT * Nx + sT * Bx);
+        const y = gy + rEff * (cT * Ny + sT * By);
+        const z = gz + rEff * (cT * Nz + sT * Bz);
+        verts.push(x, y, z);
+      }
+    }
+    meshes.push({ ISTEPS, JSTEPS, verts });
+  }
+  return { meshes };
+}
+
+function buildMafaldine(v) {
+  // Legendre, Pasta by Design, p.114.  Domain (i,j) ∈ [0,30] × [0, jmax].
+  //   Π = 7i/18                                         (width, x)
+  //   Θ = j/3                                           (length, z)
+  //   K = if(6 ≤ i ≤ 24, 0,
+  //         if(i ≤ 6, ((6-i)/6)·cos((j+5)π/10),
+  //                   ((i-24)/6)·cos((j+15)π/10)))
+  // Thickened by extruding the K-surface downward by `thk` along y.
+  // Six submeshes: top, bottom, and four side strips along the rectangle's
+  // (i,j) boundary, all sharing one (ISTEPS,JSTEPS) lattice resolution.
+  const ISTEPS = 60;
+  const jmax = Math.round(v.mf_jmax);
+  const JSTEPS = Math.max(60, Math.min(600, Math.round(jmax * 2)));
+  const amp = v.mf_amp, band = v.mf_band, thk = v.mf_thk;
+  const iMax = 30;
+
+  const yTop = (i, j) => {
+    if (i >= band && i <= (iMax - band)) return 0;
+    if (i < band) return amp * ((band - i) / band) * Math.cos((j + 5) * Math.PI / 10);
+    return amp * ((i - (iMax - band)) / band) * Math.cos((j + 15) * Math.PI / 10);
+  };
+  const X = (i) => 7 * i / 18;
+  const Z = (j) => j / 3;
+
+  const meshes = [];
+
+  // Top surface (y = K)
+  {
+    const verts = [];
+    for (let ii = 0; ii <= ISTEPS; ii++) {
+      const i = (ii / ISTEPS) * iMax;
+      for (let jj = 0; jj <= JSTEPS; jj++) {
+        const j = (jj / JSTEPS) * jmax;
+        verts.push(X(i), yTop(i, j), Z(j));
+      }
+    }
+    meshes.push({ ISTEPS, JSTEPS, verts });
+  }
+
+  if (thk > 0) {
+    // Bottom surface (y = K - thk).  Flip winding so normals face -y.
+    {
+      const verts = [];
+      for (let ii = 0; ii <= ISTEPS; ii++) {
+        const i = (ii / ISTEPS) * iMax;
+        for (let jj = 0; jj <= JSTEPS; jj++) {
+          const j = (jj / JSTEPS) * jmax;
+          verts.push(X(i), yTop(i, j) - thk, Z(j));
+        }
+      }
+      meshes.push({ ISTEPS, JSTEPS, verts, flip_winding: true });
+    }
+
+    // Side: i = 0 (the −x edge).  Walk j × {top,bottom}.
+    // Param row index = j, col 0 = bottom, col 1 = top.
+    const sideIJ = (iFixed, swap) => {
+      const verts = [];
+      for (let jj = 0; jj <= JSTEPS; jj++) {
+        const j = (jj / JSTEPS) * jmax;
+        const x = X(iFixed), z = Z(j), yT = yTop(iFixed, j);
+        // bottom first, then top
+        verts.push(x, yT - thk, z);
+        verts.push(x, yT,       z);
+      }
+      // Mesh has (JSTEPS+1) rows, 2 cols → ISTEPS=JSTEPS, JSTEPS=1
+      return { ISTEPS: JSTEPS, JSTEPS: 1, verts, flip_winding: swap };
+    };
+    meshes.push(sideIJ(0,      false));  // -x face
+    meshes.push(sideIJ(iMax,   true));   // +x face (opposite winding)
+
+    // Side: j = 0 and j = jmax (the −z and +z edges).
+    const sideJI = (jFixed, swap) => {
+      const verts = [];
+      for (let ii = 0; ii <= ISTEPS; ii++) {
+        const i = (ii / ISTEPS) * iMax;
+        const x = X(i), z = Z(jFixed), yT = yTop(i, jFixed);
+        verts.push(x, yT - thk, z);
+        verts.push(x, yT,       z);
+      }
+      return { ISTEPS, JSTEPS: 1, verts, flip_winding: swap };
+    };
+    meshes.push(sideJI(0,    true));   // -z face
+    meshes.push(sideJI(jmax, false));  // +z face
+  }
+
+  return { meshes };
+}
+
+function buildGnocchi(v) {
+  // Short ridged spheroid with a thumbprint indentation on top.
+  // u ∈ [0,π] (latitude), θ ∈ [0,2π] (longitude)
+  // base: x = R·sinφ·cosθ · ridge(θ),  y = (L/2)·cosφ · taperEnv,  z = R·sinφ·sinθ · ridge(θ)
+  // thumb: subtract a Gaussian dent on the +y face (φ near 0).
+  const ISTEPS = 90, JSTEPS = 96;
+  const L = v.gn_L, R = v.gn_R, taper = v.gn_tp;
+  const td = v.gn_td, tw = v.gn_tw;
+  const n = Math.round(v.gn_rn), amp = v.gn_ra;
+  const verts = [];
+  for (let i = 0; i <= ISTEPS; i++) {
+    const phi = (i / ISTEPS) * Math.PI;
+    const sphi = Math.sin(phi), cphi = Math.cos(phi);
+    // Thumbprint dent — strongest near phi=0 (top) and on the +z hemisphere.
+    // We let it act radially (pulls the surface inward).
+    const dent = td * Math.exp(-(phi / tw) * (phi / tw));
+    for (let j = 0; j <= JSTEPS; j++) {
+      const theta = (2 * Math.PI * j) / JSTEPS;
+      const ridge = (n > 0) ? (1 + amp * Math.sin(n * theta)) : 1;
+      const sTh = Math.sin(theta), cTh = Math.cos(theta);
+      // Only dent on the front face (cos θ > 0) so the thumb is local, not a belt.
+      const dentMul = Math.max(0, cTh);
+      const rRad = R * ridge * (1 - dent * dentMul);
+      const yScale = (L / 2) * (1 - taper * Math.pow(Math.abs(cphi), 2));
+      const x = rRad * sphi * cTh;
+      const y = yScale * cphi;
+      const z = rRad * sphi * sTh;
+      verts.push(x, y, z);
+    }
+  }
+  return { meshes: [{ ISTEPS, JSTEPS, verts }] };
+}
+
+function buildRotelle(v) {
+  // Legendre, Pasta by Design, p.152.  Rotelle is two co-extruded curves,
+  // both vertically swept by K = j/5 over j ∈ [0, 5].
+  //
+  //   inner (i ∈ [0, 2000]):
+  //     Π = 0.5·cos(iπ/1000) + 1.5·sin(3iπ/1000)^50 · cos(iπ/1000)
+  //     Θ = 0.5·sin(iπ/1000) + 1.5·sin(3iπ/1000)^50 · sin(iπ/1000)
+  //   outer (i ∈ [0, 666]):
+  //     T = 2.05·cos(3iπ/1000) + 0.03·cos(91iπ/1000)
+  //     X = 2.05·sin(3iπ/1000) + 0.03·sin(93iπ/1000)
+  //
+  // The inner curve is a hub of radius 0.5 with 6 needle spikes
+  // (sin(3iπ/1000)^50 peaks at six i-values over [0,2000]) reaching out
+  // to radius ~2.0.  The outer curve is one period of a 91/93-fold rippled
+  // circle of radius 2.05.  Both are vertically extruded into thin walls.
+  const ISTEPS_INNER = 1200;   // enough to resolve sin^50 spikes
+  const ISTEPS_OUTER = 600;
+  const JSTEPS = 4;
+  const se = Math.round(v.ro_se);
+  const sl = v.ro_sl, rr = v.ro_rr, h = v.ro_h;
+
+  const inner = [];
+  for (let ii = 0; ii <= ISTEPS_INNER; ii++) {
+    const i = (ii / ISTEPS_INNER) * 2000;
+    const a = i * Math.PI / 1000;
+    const spike = Math.pow(Math.sin(3 * i * Math.PI / 1000), se);
+    const r = 0.5 + sl * spike;
+    const px = r * Math.cos(a);
+    const py = r * Math.sin(a);
+    for (let jj = 0; jj <= JSTEPS; jj++) {
+      const j = (jj / JSTEPS) * 5;
+      const k = h * (j / 5);
+      inner.push(px, k, py);
+    }
+  }
+
+  const outer = [];
+  for (let ii = 0; ii <= ISTEPS_OUTER; ii++) {
+    // i ∈ [0, 666]; book uses if(i ≤ 666, expr, 0) — we just walk that range.
+    const i = (ii / ISTEPS_OUTER) * 666;
+    const px = 2.05 * Math.cos(3 * i * Math.PI / 1000) + rr * Math.cos(91 * i * Math.PI / 1000);
+    const py = 2.05 * Math.sin(3 * i * Math.PI / 1000) + rr * Math.sin(93 * i * Math.PI / 1000);
+    for (let jj = 0; jj <= JSTEPS; jj++) {
+      const j = (jj / JSTEPS) * 5;
+      const k = h * (j / 5);
+      outer.push(px, k, py);
+    }
+  }
+
+  return {
+    meshes: [
+      { ISTEPS: ISTEPS_INNER, JSTEPS, verts: inner },
+      { ISTEPS: ISTEPS_OUTER, JSTEPS, verts: outer, flip_winding: true },
+    ],
+  };
+}
+
+function buildSpaghetti(v) {
+  // A single straight strand drooping under "gravity," with a gentle 3D wobble
+  // so it's not a perfectly boring cylinder.  Tube swept along γ via the
+  // standard Frenet frame.
+  //   γ(u) = ( x(u),  -sag · 4u(1-u) + wobbleY,  wobbleZ )
+  // Both wobbles are sinusoids with their own freq + phase so the strand
+  // curves out of the plane.
+  const ISTEPS = 360, JSTEPS = 16;
+  const L = v.sp_L, r = v.sp_r, sag = v.sp_sag;
+  const wa = v.sp_wa, wf = v.sp_wf, wp = v.sp_wp;
+  const verts = [];
+  // Helpers: position and its derivative dγ/du
+  const pos = (u) => {
+    const x = u * L - L / 2;
+    const droop = -sag * 4 * u * (1 - u);
+    const wobZ = wa * Math.sin(wf * Math.PI * u + wp);
+    const wobY = 0.5 * wa * Math.sin(2 * wf * Math.PI * u);
+    return [x, droop + wobY, wobZ];
+  };
+  const dpos = (u) => {
+    const dx = L;
+    const dDroop = -sag * 4 * (1 - 2 * u);
+    const dwobZ = wa * (wf * Math.PI) * Math.cos(wf * Math.PI * u + wp);
+    const dwobY = 0.5 * wa * (2 * wf * Math.PI) * Math.cos(2 * wf * Math.PI * u);
+    return [dx, dDroop + dwobY, dwobZ];
+  };
+  for (let i = 0; i <= ISTEPS; i++) {
+    const u = i / ISTEPS;
+    const [gx, gy, gz] = pos(u);
+    let [Tx, Ty, Tz] = dpos(u);
+    let Tm = Math.hypot(Tx, Ty, Tz); Tx/=Tm; Ty/=Tm; Tz/=Tm;
+    // Pick a stable normal: project world-up onto plane perpendicular to T.
+    let upx = 0, upy = 1, upz = 0;
+    const dot = Tx*upx + Ty*upy + Tz*upz;
+    let Nx = upx - dot*Tx, Ny = upy - dot*Ty, Nz = upz - dot*Tz;
+    let Nm = Math.hypot(Nx, Ny, Nz);
+    if (Nm < 1e-6) { Nx = 0; Ny = 0; Nz = 1; Nm = 1; }
+    Nx/=Nm; Ny/=Nm; Nz/=Nm;
+    // B = T × N
+    let Bx = Ty*Nz - Tz*Ny, By = Tz*Nx - Tx*Nz, Bz = Tx*Ny - Ty*Nx;
+    let Bm = Math.hypot(Bx, By, Bz); Bx/=Bm; By/=Bm; Bz/=Bm;
+    for (let j = 0; j <= JSTEPS; j++) {
+      const theta = (2 * Math.PI * j) / JSTEPS;
+      const cT = Math.cos(theta), sT = Math.sin(theta);
+      const x = gx + r * (cT * Nx + sT * Bx);
+      const y = gy + r * (cT * Ny + sT * By);
+      const z = gz + r * (cT * Nz + sT * Bz);
+      verts.push(x, y, z);
+    }
+  }
+  return { meshes: [{ ISTEPS, JSTEPS, verts }] };
+}
+
+const BUILDERS = {
+  fusilli: buildFusilli,
+  cavatappi: buildCavatappi,
+  penne: buildPenne,
+  farfalle: buildFarfalle,
+  macaroni: buildMacaroni,
+  gemelli: buildGemelli,
+  mafaldine: buildMafaldine,
+  gnocchi: buildGnocchi,
+  spaghetti: buildSpaghetti,
+  rotelle: buildRotelle,
+};
+
+// ---------- p5 sketch ----------
+new p5((p) => {
+  let geom = null;
+
+  const buildGeometry = () => {
+    const built = BUILDERS[currentShape](vals);
+
+    // 1. Bounding box across all submeshes.
+    let minX = Infinity, minY = Infinity, minZ = Infinity;
+    let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity;
+    for (const m of built.meshes) {
+      for (let k = 0; k < m.verts.length; k += 3) {
+        const x = m.verts[k], y = m.verts[k+1], z = m.verts[k+2];
+        if (x<minX) minX=x; if (x>maxX) maxX=x;
+        if (y<minY) minY=y; if (y>maxY) maxY=y;
+        if (z<minZ) minZ=z; if (z>maxZ) maxZ=z;
+      }
+    }
+    const cx = 0.5*(minX+maxX), cy = 0.5*(minY+maxY), cz = 0.5*(minZ+maxZ);
+    const extent = Math.max(maxX-minX, maxY-minY, maxZ-minZ) || 1;
+    const s = TARGET_SIZE / extent;
+
+    // 2. Push into a single p5.Geometry, with vertex offsets per submesh.
+    const g = new p5.Geometry();
+    let base = 0;
+    for (const m of built.meshes) {
+      const cols = m.JSTEPS + 1;
+      // wrap_i: mesh emitted ISTEPS columns (not ISTEPS+1) and the last
+      // column's neighbor is column 0 — used by closed parameterizations
+      // like Legendre's orecchiette so the seam doesn't get a shading break.
+      const rowsStored = m.wrap_i ? m.ISTEPS : (m.ISTEPS + 1);
+      for (let k = 0; k < m.verts.length; k += 3) {
+        // p5 WEBGL has Y up. Our pasta uses Y as the natural "vertical/long"
+        // axis; flip so models stand the right way up.
+        g.vertices.push(p.createVector(
+          (m.verts[k]   - cx) * s,
+          -(m.verts[k+1] - cy) * s,
+          (m.verts[k+2] - cz) * s,
+        ));
+      }
+      for (let i = 0; i < m.ISTEPS; i++) {
+        const iNext = m.wrap_i ? ((i + 1) % m.ISTEPS) : (i + 1);
+        for (let j = 0; j < m.JSTEPS; j++) {
+          const a = base + i    *cols + j;
+          const b = base + iNext*cols + j;
+          const c = base + iNext*cols + j + 1;
+          const d = base + i    *cols + j + 1;
+          if (m.flip_winding) {
+            g.faces.push([a, c, b]);
+            g.faces.push([a, d, c]);
+          } else {
+            g.faces.push([a, b, c]);
+            g.faces.push([a, c, d]);
+          }
+        }
+      }
+      base += rowsStored * cols;
+    }
+    g.computeNormals();
+    return g;
+  };
+
+  const setProjection = () => {
+    p.perspective(Math.PI / 3, p.width / p.height, 1, 20000);
+  };
+
+  p.setup = () => {
+    const c = p.createCanvas(p.windowWidth, p.windowHeight, p.WEBGL);
+    c.parent('canvas-holder');
+    p.noStroke();
+    setProjection();
+  };
+
+  p.windowResized = () => {
+    p.resizeCanvas(p.windowWidth, p.windowHeight);
+    setProjection();
+  };
+
+  p.draw = () => {
+    if (dirty) {
+      if (geom) p.freeGeometry(geom);
+      geom = buildGeometry();
+      dirty = false;
+    }
+    p.clear();
+    p.background(26, 20, 13);
+    if (!uiDrag && !uiHover) p.orbitControl(4, 4);
+    p.rotateX(Math.PI / 12);
+
+    p.ambientLight(75, 65, 50);
+    p.directionalLight(255, 235, 195, 0.4, -0.7, -0.5);
+    p.directionalLight(180, 130, 80, -0.6, -0.2, -0.4);
+    // Pasta-yellow surface
+    p.ambientMaterial(245, 215, 150);
+    p.fill(245, 215, 150);
+    p.specularMaterial(255, 230, 180);
+    p.shininess(35);
+
+    p.model(geom);
+  };
+});
+</script>
+</body>
+</html>
