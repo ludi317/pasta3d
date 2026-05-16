@@ -1,9 +1,10 @@
+
 # pasta3d
 
 Interactive 3D parametric pasta viewer with live sliders. Ten shapes,
 several ported directly from George L. Legendre's *Pasta by Design*
 (Thames & Hudson, 2011).
-
+<img width="1139" height="787" alt="Screenshot 2026-05-15 at 7 51 59 PM" src="https://github.com/user-attachments/assets/6983fc49-1014-40f4-afc2-c0f87bb57b7e" />
 ## Run
 
 Open `index.html` in any modern browser. No build step.
