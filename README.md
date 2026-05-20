@@ -20,11 +20,11 @@ Ported from from George L. Legendre's *Pasta by Design*
 (Thames & Hudson, 2011):
 
 - **Fusilli** — single-blade helicoid (rotating, climbing bowed bar)
-- **Cavatappi** — toroidal tube with 7-fold ribbing, helical climb
-- **Farfalle** — bowtie with central pinch and crenellated edges (p.63)
+- **Cavatappi** — toroidal tube with 7-fold ribbing, helical climb 
+- **Farfalle** — bowtie with central pinch and crenellated edges
 - **Gnocchi** — semi-open ridged shell
-- **Mafaldine** — flat ribbon with rippled long edges (p.114, thickened)
-- **Rotelle** — wagon-wheel: 6-spoke hub + 91/93-rippled rim (p.152)
+- **Mafaldine** — flat ribbon with rippled long edges (but thickened)
+- **Rotelle** — wagon-wheel: 6-spoke hub + 91/93-rippled rim (but thickened)
 
 Hand-built parameterizations (not from the book):
 
@@ -33,9 +33,3 @@ Hand-built parameterizations (not from the book):
 - **Gemelli** — two tubes winding around a shared axis
 - **Spaghetti** — drooping/wobbling tube swept by Frenet frame
 
-## Credit
-
-Slider/p5.js scaffolding adapted from
-[conch3d](https://github.com/ludi317/conch3d).
-Pasta equations are from George L. Legendre,
-*Pasta by Design* (Thames & Hudson, 2011).
