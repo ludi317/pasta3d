@@ -52,35 +52,29 @@
   <!-- Fusilli -->
   <div class="shape-group" data-shape="fusilli">
     <h2>Fusilli</h2>
-    <div class="row"><label>length: <span class="val" id="v-fu_len"></span></label>
-      <input type="range" id="fu_len" min="1.5" max="8" step="0.05" value="3.5"></div>
-    <div class="row"><label>blade radius: <span class="val" id="v-fu_r"></span></label>
-      <input type="range" id="fu_r" min="0.2" max="2.5" step="0.01" value="1.0"></div>
-    <div class="row"><label>blade thickness: <span class="val" id="v-fu_thk"></span></label>
-      <input type="range" id="fu_thk" min="0.02" max="0.4" step="0.005" value="0.12"></div>
-    <div class="row"><label>twist (turns): <span class="val" id="v-fu_tw"></span></label>
-      <input type="range" id="fu_tw" min="0.5" max="6" step="0.05" value="2.5"></div>
-    <div class="row"><label>blades: <span class="val" id="v-fu_n"></span></label>
-      <input type="range" id="fu_n" min="2" max="5" step="1" value="4"></div>
-    <div class="row"><label>edge curl: <span class="val" id="v-fu_curl"></span></label>
-      <input type="range" id="fu_curl" min="0" max="1" step="0.01" value="0.4"></div>
+    <div class="row"><label>length (i max): <span class="val" id="v-fu_imax"></span></label>
+      <input type="range" id="fu_imax" min="50" max="400" step="1" value="200"></div>
+    <div class="row"><label>radius: <span class="val" id="v-fu_r"></span></label>
+      <input type="range" id="fu_r" min="1" max="12" step="0.05" value="6"></div>
+    <div class="row"><label>bow depth: <span class="val" id="v-fu_bow"></span></label>
+      <input type="range" id="fu_bow" min="0" max="5" step="0.05" value="2.5"></div>
+    <div class="row"><label>twist rate: <span class="val" id="v-fu_tw"></span></label>
+      <input type="range" id="fu_tw" min="0.5" max="8" step="0.05" value="3"></div>
+    <div class="row"><label>climb rate: <span class="val" id="v-fu_cl"></span></label>
+      <input type="range" id="fu_cl" min="0" max="0.5" step="0.005" value="0.15"></div>
   </div>
 
   <!-- Cavatappi -->
   <div class="shape-group" data-shape="cavatappi">
     <h2>Cavatappi</h2>
-    <div class="row"><label>helix radius: <span class="val" id="v-ca_R"></span></label>
-      <input type="range" id="ca_R" min="0.3" max="3" step="0.01" value="1.2"></div>
-    <div class="row"><label>helix pitch: <span class="val" id="v-ca_p"></span></label>
-      <input type="range" id="ca_p" min="0.1" max="2" step="0.01" value="0.55"></div>
-    <div class="row"><label>tube radius: <span class="val" id="v-ca_r"></span></label>
-      <input type="range" id="ca_r" min="0.05" max="1.0" step="0.005" value="0.35"></div>
-    <div class="row"><label>turns: <span class="val" id="v-ca_t"></span></label>
-      <input type="range" id="ca_t" min="1" max="8" step="0.05" value="3.5"></div>
-    <div class="row"><label>ridges (n): <span class="val" id="v-ca_rn"></span></label>
-      <input type="range" id="ca_rn" min="0" max="24" step="1" value="10"></div>
-    <div class="row"><label>ridge amp: <span class="val" id="v-ca_ra"></span></label>
-      <input type="range" id="ca_ra" min="0" max="0.25" step="0.005" value="0.06"></div>
+    <div class="row"><label>tube radius: <span class="val" id="v-ca_tr"></span></label>
+      <input type="range" id="ca_tr" min="0.5" max="4" step="0.01" value="2.0"></div>
+    <div class="row"><label>tube ridge amp: <span class="val" id="v-ca_ra"></span></label>
+      <input type="range" id="ca_ra" min="0" max="0.5" step="0.005" value="0.1"></div>
+    <div class="row"><label>climb rate: <span class="val" id="v-ca_cl"></span></label>
+      <input type="range" id="ca_cl" min="0" max="0.5" step="0.005" value="0.167"></div>
+    <div class="row"><label>length (j max): <span class="val" id="v-ca_jmax"></span></label>
+      <input type="range" id="ca_jmax" min="50" max="300" step="1" value="150"></div>
   </div>
 
   <!-- Penne -->
@@ -97,7 +91,6 @@
     <div class="row"><label>ridge amp: <span class="val" id="v-pe_ra"></span></label>
       <input type="range" id="pe_ra" min="0" max="0.15" step="0.002" value="0.04"></div>
   </div>
-
 
   <!-- Farfalle -->
   <div class="shape-group" data-shape="farfalle">
@@ -158,20 +151,14 @@
   <!-- Gnocchi -->
   <div class="shape-group" data-shape="gnocchi">
     <h2>Gnocchi</h2>
-    <div class="row"><label>length: <span class="val" id="v-gn_L"></span></label>
-      <input type="range" id="gn_L" min="0.8" max="2.5" step="0.01" value="1.4"></div>
-    <div class="row"><label>radius: <span class="val" id="v-gn_R"></span></label>
-      <input type="range" id="gn_R" min="0.4" max="1.5" step="0.01" value="0.8"></div>
-    <div class="row"><label>end taper: <span class="val" id="v-gn_tp"></span></label>
-      <input type="range" id="gn_tp" min="0" max="0.6" step="0.005" value="0.18"></div>
-    <div class="row"><label>thumb depth: <span class="val" id="v-gn_td"></span></label>
-      <input type="range" id="gn_td" min="0" max="0.6" step="0.005" value="0.32"></div>
-    <div class="row"><label>thumb width: <span class="val" id="v-gn_tw"></span></label>
-      <input type="range" id="gn_tw" min="0.15" max="1.0" step="0.005" value="0.45"></div>
-    <div class="row"><label>ridges (n): <span class="val" id="v-gn_rn"></span></label>
-      <input type="range" id="gn_rn" min="0" max="20" step="1" value="9"></div>
-    <div class="row"><label>ridge amp: <span class="val" id="v-gn_ra"></span></label>
-      <input type="range" id="gn_ra" min="0" max="0.18" step="0.002" value="0.05"></div>
+    <div class="row"><label>shell sweep (× 1.3π): <span class="val" id="v-gn_sweep"></span></label>
+      <input type="range" id="gn_sweep" min="0.5" max="1.6" step="0.005" value="1.3"></div>
+    <div class="row"><label>radial expansion: <span class="val" id="v-gn_re"></span></label>
+      <input type="range" id="gn_re" min="0" max="2" step="0.005" value="1.0"></div>
+    <div class="row"><label>ridge amp (β): <span class="val" id="v-gn_be"></span></label>
+      <input type="range" id="gn_be" min="0" max="2" step="0.005" value="1.0"></div>
+    <div class="row"><label>height amp (K): <span class="val" id="v-gn_h"></span></label>
+      <input type="range" id="gn_h" min="0" max="2" step="0.005" value="1.0"></div>
   </div>
 
   <!-- Spaghetti -->
@@ -201,7 +188,7 @@
     <div class="row"><label>rim ripple amp: <span class="val" id="v-ro_rr"></span></label>
       <input type="range" id="ro_rr" min="0" max="0.15" step="0.001" value="0.03"></div>
     <div class="row"><label>pasta thickness: <span class="val" id="v-ro_t"></span></label>
-      <input type="range" id="ro_t" min="0.005" max="0.5" step="0.005" value="0.04"></div>
+      <input type="range" id="ro_t" min="0.005" max="0.5" step="0.005" value="0.005"></div>
     <div class="row"><label>depth: <span class="val" id="v-ro_h"></span></label>
       <input type="range" id="ro_h" min="0.2" max="2" step="0.01" value="1.0"></div>
   </div>
@@ -264,29 +251,29 @@
  */
 
 const SHAPE_PARAMS = {
-  fusilli:     ['fu_len','fu_r','fu_thk','fu_tw','fu_n','fu_curl'],
-  cavatappi:   ['ca_R','ca_p','ca_r','ca_t','ca_rn','ca_ra'],
+  fusilli:     ['fu_imax','fu_r','fu_bow','fu_tw','fu_cl'],
+  cavatappi:   ['ca_tr','ca_ra','ca_cl','ca_jmax'],
   penne:       ['pe_r','pe_L','pe_a','pe_rn','pe_ra'],
   farfalle:    ['fa_pa','fa_wf','fa_er','fa_h'],
   macaroni:    ['ma_R','ma_r','ma_arc','ma_rn','ma_ra'],
   gemelli:     ['ge_L','ge_o','ge_r','ge_t','ge_tp'],
   mafaldine:   ['mf_jmax','mf_amp','mf_band','mf_thk'],
-  gnocchi:     ['gn_L','gn_R','gn_tp','gn_td','gn_tw','gn_rn','gn_ra'],
+  gnocchi:     ['gn_sweep','gn_re','gn_be','gn_h'],
   spaghetti:   ['sp_L','sp_r','sp_sag','sp_wa','sp_wf','sp_wp'],
   rotelle:     ['ro_se','ro_sl','ro_rr','ro_t','ro_h'],
 };
 
 const DEFAULTS = {
-  fu_len: 3.5, fu_r: 1.0, fu_thk: 0.12, fu_tw: 2.5, fu_n: 4, fu_curl: 0.4,
-  ca_R: 1.2, ca_p: 0.55, ca_r: 0.35, ca_t: 3.5, ca_rn: 10, ca_ra: 0.06,
+  fu_imax: 200, fu_r: 6, fu_bow: 2.5, fu_tw: 3, fu_cl: 0.15,
+  ca_tr: 2.0, ca_ra: 0.1, ca_cl: 0.167, ca_jmax: 150,
   pe_r: 0.9, pe_L: 4, pe_a: 0.6, pe_rn: 14, pe_ra: 0.04,
   fa_pa: 1.0, fa_wf: 1.0, fa_er: 1.0, fa_h: 1.0,
   ma_R: 1.6, ma_r: 0.45, ma_arc: 2.0, ma_rn: 0, ma_ra: 0.05,
   ge_L: 6, ge_o: 0.55, ge_r: 0.35, ge_t: 2.2, ge_tp: 0.2,
   mf_jmax: 150, mf_amp: 1.0, mf_band: 6, mf_thk: 0.5,
-  gn_L: 1.4, gn_R: 0.8, gn_tp: 0.18, gn_td: 0.32, gn_tw: 0.45, gn_rn: 9, gn_ra: 0.05,
+  gn_sweep: 1.3, gn_re: 1.0, gn_be: 1.0, gn_h: 1.0,
   sp_L: 12, sp_r: 0.18, sp_sag: 0.6, sp_wa: 0.25, sp_wf: 1.4, sp_wp: 1.0,
-  ro_se: 50, ro_sl: 1.5, ro_rr: 0.03, ro_t: 0.04, ro_h: 1.0,
+  ro_se: 50, ro_sl: 1.5, ro_rr: 0.03, ro_t: 0.005, ro_h: 1.0,
 };
 
 const vals = { ...DEFAULTS };
@@ -299,9 +286,8 @@ allSliderIds.forEach(id => {
   const out = document.getElementById('v-' + id);
   const update = () => {
     vals[id] = parseFloat(el.value);
-    const isInt = (id === 'fu_n' || id === 'ca_rn' || id === 'pe_rn'
-                   || id === 'ma_rn' || id === 'gn_rn' || id === 'mf_jmax'
-                   || id === 'ro_se');
+    const isInt = (id === 'pe_rn' || id === 'ma_rn' || id === 'mf_jmax'
+                   || id === 'ro_se' || id === 'fu_imax' || id === 'ca_jmax');
     out.textContent = isInt ? vals[id].toFixed(0) : vals[id].toFixed(3);
     dirty = true;
   };
@@ -351,73 +337,68 @@ const TARGET_SIZE = 600;
 // Each builder returns { meshes: [ { ISTEPS, JSTEPS, verts: [x,y,z,...] } ] }.
 
 function buildFusilli(v) {
-  const ISTEPS = 220, JSTEPS = 16;
-  const N = Math.round(v.fu_n);
-  const L = v.fu_len, R = v.fu_r, thk = v.fu_thk, twist = v.fu_tw, curl = v.fu_curl;
-  const meshes = [];
-  for (let k = 0; k < N; k++) {
-    const phi0 = (2 * Math.PI * k) / N;
-    const verts = [];
-    for (let i = 0; i <= ISTEPS; i++) {
-      const t = (i / ISTEPS) * L - L / 2;
-      const angle = phi0 + (2 * Math.PI * twist * (t + L / 2)) / L;
-      const ca = Math.cos(angle), sa = Math.sin(angle);
-      // Perpendicular direction (around the axis), used to give blade thickness.
-      const pa = angle + Math.PI / 2;
-      const cpa = Math.cos(pa), spa = Math.sin(pa);
-      for (let j = 0; j <= JSTEPS; j++) {
-        // u along blade radial direction in [-1,1], s across blade thickness in [-1,1]
-        // We unfold (j) into both: top half = outer face, bottom half = inner face,
-        // wrapping at the edges to make a closed solid blade.
-        let u, s;
-        const half = JSTEPS / 2;
-        if (j <= half) {
-          u = (j / half) * 2 - 1;       // -1 → +1
-          s = +1;
-        } else {
-          u = ((JSTEPS - j) / half) * 2 - 1; // +1 → -1
-          s = -1;
-        }
-        const r = R * (1 - curl * u * u);
-        const x = r * u * ca + thk * s * cpa;
-        const y = t;
-        const z = r * u * sa + thk * s * spa;
-        verts.push(x, y, z);
-      }
+  // Legendre, Pasta by Design, p.30.  Domain (i,j) ∈ [0, iMax] × [0, 25].
+  //
+  //   Π = R·cos((tw·i + 10)π/100) · cos(jπ/25)
+  //   Θ = R·sin((tw·i + 10)π/100) · cos(jπ/25)
+  //   K = cl·i + bow·cos((j+12.5)π/25)
+  //
+  // Single-blade helicoid: at each i, j parameterizes a bowed bar that rotates
+  // around the K axis (cos((tw·i+10)π/100)) and rises (cl·i).
+  // Book canonical: tw=3, cl=0.15 (=3i/20), bow=2.5, R=6, iMax=200.
+  // Sliders rescale the four shape constants and length.
+  const iMax = Math.round(v.fu_imax);
+  const ISTEPS = Math.max(150, Math.min(800, iMax * 2));
+  const JSTEPS = 80;
+  const R = v.fu_r, bow = v.fu_bow, tw = v.fu_tw, cl = v.fu_cl;
+  const verts = [];
+  for (let ii = 0; ii <= ISTEPS; ii++) {
+    const i = (ii / ISTEPS) * iMax;
+    const ang = (tw * i + 10) * Math.PI / 100;
+    const ca = Math.cos(ang), sa = Math.sin(ang);
+    for (let jj = 0; jj <= JSTEPS; jj++) {
+      const j = (jj / JSTEPS) * 25;
+      const cosj = Math.cos(j * Math.PI / 25);
+      const x = R * ca * cosj;
+      const z = R * sa * cosj;
+      const y = cl * i + bow * Math.cos((j + 12.5) * Math.PI / 25);
+      verts.push(x, y, z);
     }
-    meshes.push({ ISTEPS, JSTEPS, verts });
   }
-  return { meshes };
+  return { meshes: [{ ISTEPS, JSTEPS, verts }] };
 }
 
 function buildCavatappi(v) {
-  const ISTEPS = 480, JSTEPS = 32;
-  const R = v.ca_R, p = v.ca_p, r = v.ca_r, turns = v.ca_t;
-  const n = Math.round(v.ca_rn), amp = v.ca_ra;
-  const tMin = 0, tMax = 2 * Math.PI * turns;
+  // Legendre, Pasta by Design.  Domain (i,j) ∈ [0, 70] × [0, jmax].
+  //
+  //   Π = (3 + tr·cos(iπ/35) + ra·cos(2iπ/7)) · cos(jπ/30)
+  //   Θ = (3 + tr·cos(iπ/35) + ra·cos(2iπ/7)) · sin(jπ/30)
+  //   K = 3 + tr·sin(iπ/35) + ra·sin(2iπ/7) + cl·j
+  //
+  // Book canonical: tr=2 (tube radius), ra=0.1 (ridge amp on tube cross-section,
+  // 7-fold ribbing), cl=1/6 (climb rate), jmax=150 (gives 2.5 helical turns).
+  // i parameterizes the tube cross-section (radius modulated by tr·cos+ra·cos);
+  // j parameterizes the helical sweep (cos/sin around the K axis + linear climb).
+  const ISTEPS = 80;
+  const tr = v.ca_tr, ra = v.ca_ra, cl = v.ca_cl;
+  const jmax = Math.round(v.ca_jmax);
+  const JSTEPS = Math.max(150, Math.min(900, Math.round(jmax * 4)));
   const verts = [];
-  for (let i = 0; i <= ISTEPS; i++) {
-    const t = tMin + (tMax - tMin) * i / ISTEPS;
-    const ct = Math.cos(t), st = Math.sin(t);
-    // γ(t) = (R cos t, p·t, R sin t)
-    const gx = R * ct, gy = p * t, gz = R * st;
-    // γ'(t) = (-R sin t, p, R cos t)
-    let Tx = -R * st, Ty = p, Tz = R * ct;
-    let Tm = Math.hypot(Tx, Ty, Tz); Tx/=Tm; Ty/=Tm; Tz/=Tm;
-    // γ''(t) = (-R cos t, 0, -R sin t) — points inward, length R
-    let Nx = -ct, Ny = 0, Nz = -st;
-    // B = T × N
-    let Bx = Ty*Nz - Tz*Ny, By = Tz*Nx - Tx*Nz, Bz = Tx*Ny - Ty*Nx;
-    let Bm = Math.hypot(Bx, By, Bz); Bx/=Bm; By/=Bm; Bz/=Bm;
-    for (let j = 0; j <= JSTEPS; j++) {
-      const theta = (2 * Math.PI * j) / JSTEPS;
-      const ridge = (n > 0) ? (1 + amp * Math.sin(n * theta)) : 1;
-      const rho = r * ridge;
-      const cT = Math.cos(theta), sT = Math.sin(theta);
-      const x = gx + rho * (cT * Nx + sT * Bx);
-      const y = gy + rho * (cT * Ny + sT * By);
-      const z = gz + rho * (cT * Nz + sT * Bz);
-      verts.push(x, y, z);
+  for (let ii = 0; ii <= ISTEPS; ii++) {
+    const i = (ii / ISTEPS) * 70;
+    const c35 = Math.cos(i * Math.PI / 35);
+    const s35 = Math.sin(i * Math.PI / 35);
+    const c7 = Math.cos(2 * i * Math.PI / 7);
+    const s7 = Math.sin(2 * i * Math.PI / 7);
+    const radial = 3 + tr * c35 + ra * c7;
+    const heightTube = tr * s35 + ra * s7;
+    for (let jj = 0; jj <= JSTEPS; jj++) {
+      const j = (jj / JSTEPS) * jmax;
+      const aj = j * Math.PI / 30;
+      const Pi = radial * Math.cos(aj);
+      const Th = radial * Math.sin(aj);
+      const K  = 3 + heightTube + cl * j;
+      verts.push(Pi, K, Th);
     }
   }
   return { meshes: [{ ISTEPS, JSTEPS, verts }] };
@@ -536,29 +517,24 @@ function buildMacaroni(v) {
 
 function buildGemelli(v) {
   // Two tubes that wind around each other along a shared axis.
-  // strand k ∈ {0,1}: γ_k(t) = (offset·cos(2π·turns·t/L + kπ), t, offset·sin(...))
   const ISTEPS = 320, JSTEPS = 24;
   const L = v.ge_L, off = v.ge_o, r = v.ge_r, turns = v.ge_t, taper = v.ge_tp;
   const meshes = [];
   for (let k = 0; k < 2; k++) {
     const verts = [];
     for (let i = 0; i <= ISTEPS; i++) {
-      const u = i / ISTEPS;                  // 0..1
+      const u = i / ISTEPS;
       const t = u * L - L / 2;
       const ang = 2 * Math.PI * turns * u + k * Math.PI;
       const ca = Math.cos(ang), sa = Math.sin(ang);
       const gx = off * ca, gy = t, gz = off * sa;
-      // dγ/dt: d/dt of ang = 2π·turns/L
       const w = 2 * Math.PI * turns / L;
       let Tx = -off * sa * w, Ty = 1, Tz = off * ca * w;
       let Tm = Math.hypot(Tx, Ty, Tz); Tx/=Tm; Ty/=Tm; Tz/=Tm;
-      // N points inward toward axis: (-cos ang, 0, -sin ang)
       const Nx = -ca, Ny = 0, Nz = -sa;
-      // B = T × N
       let Bx = Ty*Nz - Tz*Ny, By = Tz*Nx - Tx*Nz, Bz = Tx*Ny - Ty*Nx;
       let Bm = Math.hypot(Bx, By, Bz); Bx/=Bm; By/=Bm; Bz/=Bm;
-      // Taper: shrink the tube near both ends.
-      const ends = 4 * u * (1 - u);            // 0 at ends, 1 in the middle
+      const ends = 4 * u * (1 - u);
       const rEff = r * (1 - taper * (1 - ends));
       for (let j = 0; j <= JSTEPS; j++) {
         const theta = (2 * Math.PI * j) / JSTEPS;
@@ -663,33 +639,33 @@ function buildMafaldine(v) {
 }
 
 function buildGnocchi(v) {
-  // Short ridged spheroid with a thumbprint indentation on top.
-  // u ∈ [0,π] (latitude), θ ∈ [0,2π] (longitude)
-  // base: x = R·sinφ·cosθ · ridge(θ),  y = (L/2)·cosφ · taperEnv,  z = R·sinφ·sinθ · ridge(θ)
-  // thumb: subtract a Gaussian dent on the +y face (φ near 0).
-  const ISTEPS = 90, JSTEPS = 96;
-  const L = v.gn_L, R = v.gn_R, taper = v.gn_tp;
-  const td = v.gn_td, tw = v.gn_tw;
-  const n = Math.round(v.gn_rn), amp = v.gn_ra;
+  // Legendre, Pasta by Design.  Domain (i,j) ∈ [0, 40] × [0, 130].
+  //
+  //   α(i,j) = (i/40) · sin(jπ/130)
+  //   β(i,j) = |cos((j+13)π/26)|
+  //
+  //   Π = 0.2·cos(s·iπ/40)·sin(jπ/130)·β  +  α·cos(s·iπ/40)
+  //   Θ = 0.2·sin(s·iπ/40)·sin(jπ/130)·β  +  α·sin(s·iπ/40)
+  //   K = 1.5·cos(jπ/130)
+  //
+  // s = 1.3 (book canonical: i sweeps 1.3π → semi-open shell).
+  // Sliders: sweep s, radial expansion α-term, ridge factor β, K height.
+  const ISTEPS = 80, JSTEPS = 260;
+  const sweep = v.gn_sweep, reMul = v.gn_re, beMul = v.gn_be, hMul = v.gn_h;
   const verts = [];
-  for (let i = 0; i <= ISTEPS; i++) {
-    const phi = (i / ISTEPS) * Math.PI;
-    const sphi = Math.sin(phi), cphi = Math.cos(phi);
-    // Thumbprint dent — strongest near phi=0 (top) and on the +z hemisphere.
-    // We let it act radially (pulls the surface inward).
-    const dent = td * Math.exp(-(phi / tw) * (phi / tw));
-    for (let j = 0; j <= JSTEPS; j++) {
-      const theta = (2 * Math.PI * j) / JSTEPS;
-      const ridge = (n > 0) ? (1 + amp * Math.sin(n * theta)) : 1;
-      const sTh = Math.sin(theta), cTh = Math.cos(theta);
-      // Only dent on the front face (cos θ > 0) so the thumb is local, not a belt.
-      const dentMul = Math.max(0, cTh);
-      const rRad = R * ridge * (1 - dent * dentMul);
-      const yScale = (L / 2) * (1 - taper * Math.pow(Math.abs(cphi), 2));
-      const x = rRad * sphi * cTh;
-      const y = yScale * cphi;
-      const z = rRad * sphi * sTh;
-      verts.push(x, y, z);
+  for (let ii = 0; ii <= ISTEPS; ii++) {
+    const i = (ii / ISTEPS) * 40;
+    const ang = sweep * i * Math.PI / 40;
+    const cAng = Math.cos(ang), sAng = Math.sin(ang);
+    for (let jj = 0; jj <= JSTEPS; jj++) {
+      const j = (jj / JSTEPS) * 130;
+      const sj = Math.sin(j * Math.PI / 130);
+      const beta = Math.abs(Math.cos((j + 13) * Math.PI / 26));
+      const alpha = (i / 40) * sj;
+      const Pi = 0.2 * cAng * sj * beta * beMul + reMul * alpha * cAng;
+      const Th = 0.2 * sAng * sj * beta * beMul + reMul * alpha * sAng;
+      const K  = hMul * 1.5 * Math.cos(j * Math.PI / 130);
+      verts.push(Pi, K, Th);
     }
   }
   return { meshes: [{ ISTEPS, JSTEPS, verts }] };
