@@ -485,7 +485,12 @@ function buildFarfalle(v) {
       verts.push(Pi, K, Th);
     }
   }
-  return { meshes: [{ ISTEPS, JSTEPS, verts }] };
+  // Render two-sided: same vertices, but emit a flip_winding submesh too
+  // so the underside is lit by the directional lights.
+  return { meshes: [
+    { ISTEPS, JSTEPS, verts },
+    { ISTEPS, JSTEPS, verts: verts.slice(), flip_winding: true },
+  ]};
 }
 
 function buildMacaroni(v) {
@@ -903,14 +908,12 @@ new p5((p) => {
     if (!uiDrag && !uiHover) p.orbitControl(4, 4);
     p.rotateX(Math.PI / 12);
 
-    p.ambientLight(75, 65, 50);
+    p.ambientLight(140, 120, 90);
     p.directionalLight(255, 235, 195, 0.4, -0.7, -0.5);
     p.directionalLight(180, 130, 80, -0.6, -0.2, -0.4);
-    // Pasta-yellow surface
+    p.directionalLight(120, 100, 70, 0.0, 0.8, 0.3);   // fill from below
     p.ambientMaterial(245, 215, 150);
     p.fill(245, 215, 150);
-    p.specularMaterial(255, 230, 180);
-    p.shininess(35);
 
     p.model(geom);
   };
