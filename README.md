@@ -1,9 +1,7 @@
 
 # pasta3d
 
-Interactive 3D parametric pasta viewer with live sliders. Ten shapes,
-six ported directly from George L. Legendre's *Pasta by Design*
-(Thames & Hudson, 2011).
+Interactive 3D parametric pasta viewer with live sliders. Ten shapes.
 <img width="1070" height="751" alt="Screenshot 2026-05-19 at 8 08 16 PM" src="https://github.com/user-attachments/assets/c2dde933-1177-456b-a8bf-cc70494ac64c" />
 
 ## Run
@@ -18,7 +16,8 @@ Open `index.html` in any modern browser. No build step.
 
 ## Shapes
 
-Ported from Legendre's exact equations:
+Ported from from George L. Legendre's *Pasta by Design*
+(Thames & Hudson, 2011):
 
 - **Fusilli** — single-blade helicoid (rotating, climbing bowed bar)
 - **Cavatappi** — toroidal tube with 7-fold ribbing, helical climb
