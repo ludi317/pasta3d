@@ -200,7 +200,9 @@
       <input type="range" id="ro_sl" min="0" max="3" step="0.01" value="1.5"></div>
     <div class="row"><label>rim ripple amp: <span class="val" id="v-ro_rr"></span></label>
       <input type="range" id="ro_rr" min="0" max="0.15" step="0.001" value="0.03"></div>
-    <div class="row"><label>thickness (depth): <span class="val" id="v-ro_h"></span></label>
+    <div class="row"><label>pasta thickness: <span class="val" id="v-ro_t"></span></label>
+      <input type="range" id="ro_t" min="0.005" max="0.5" step="0.005" value="0.04"></div>
+    <div class="row"><label>depth: <span class="val" id="v-ro_h"></span></label>
       <input type="range" id="ro_h" min="0.2" max="2" step="0.01" value="1.0"></div>
   </div>
 
@@ -271,7 +273,7 @@ const SHAPE_PARAMS = {
   mafaldine:   ['mf_jmax','mf_amp','mf_band','mf_thk'],
   gnocchi:     ['gn_L','gn_R','gn_tp','gn_td','gn_tw','gn_rn','gn_ra'],
   spaghetti:   ['sp_L','sp_r','sp_sag','sp_wa','sp_wf','sp_wp'],
-  rotelle:     ['ro_se','ro_sl','ro_rr','ro_h'],
+  rotelle:     ['ro_se','ro_sl','ro_rr','ro_t','ro_h'],
 };
 
 const DEFAULTS = {
@@ -284,7 +286,7 @@ const DEFAULTS = {
   mf_jmax: 150, mf_amp: 1.0, mf_band: 6, mf_thk: 0.5,
   gn_L: 1.4, gn_R: 0.8, gn_tp: 0.18, gn_td: 0.32, gn_tw: 0.45, gn_rn: 9, gn_ra: 0.05,
   sp_L: 12, sp_r: 0.18, sp_sag: 0.6, sp_wa: 0.25, sp_wf: 1.4, sp_wp: 1.0,
-  ro_se: 50, ro_sl: 1.5, ro_rr: 0.03, ro_h: 1.0,
+  ro_se: 50, ro_sl: 1.5, ro_rr: 0.03, ro_t: 0.04, ro_h: 1.0,
 };
 
 const vals = { ...DEFAULTS };
@@ -448,14 +450,15 @@ function buildFarfalle(v) {
   // Legendre, Pasta by Design, p.63.  Domain (i,j) ∈ [0,80] × [0,80].
   //
   //   α(i)   = sin((7i+16)π/40)
-  //   β(i,j) = 7j/16 + 4·sin(iπ/80)·sin((j-10)π/12)
+  //   β(i,j) = 7j/16 + 4·sin(iπ/80)·sin((j-10)π/120)
   //   γ(i,j) = 10·cos((i+80)π/80)·sin((j+110)π/100)^9
   //   η(i,j) = 7j/16 - 4·sin(iπ/80) - α(i)·sin((10-j)π/20)
+  //   ι(i,j) = 7j/16 + 4·sin(iπ/80) + α(i)·sin((j-70)π/20)   // η reflected about j=40
   //
   //   Π = 3i/8 + if(20 ≤ i ≤ 60, 7·sin((i+40)π/40)^3 · sin((j+110)π/100)^9,
   //                              γ(i,j))
   //   Θ = if(10 ≤ j ≤ 70, β(i,j) - 4·sin(iπ/80)·sin((70-j)π/120),
-  //         if(j < 10, η(i,j), η(i, 80-j)))
+  //         if(j ≤ 10, η(i,j), ι(i,j)))
   //   K = 3·sin((i+10)π/20) · sin(jπ/80)^1.5
   //
   // Sliders rescale the four "feature" terms — the central pinch zone in Π,
@@ -483,20 +486,15 @@ function buildFarfalle(v) {
         Pi += wfMul * gamma;
       }
       // ---- Θ ----
-      const etaAt = (jj_eta) => {
-        return 7 * jj_eta / 16
-             - 4 * sini80
-             - alpha * Math.sin((10 - jj_eta) * Math.PI / 20);
-      };
       let Th;
       if (j >= 10 && j <= 70) {
-        const beta = 7 * j / 16 + 4 * sini80 * Math.sin((j - 10) * Math.PI / 12);
+        const beta = 7 * j / 16 + 4 * sini80 * Math.sin((j - 10) * Math.PI / 120);
         Th = beta - erMul * 4 * sini80 * Math.sin((70 - j) * Math.PI / 120);
-      } else if (j < 10) {
+      } else if (j <= 10) {
         Th = 7 * j / 16 - 4 * sini80 - erMul * alpha * Math.sin((10 - j) * Math.PI / 20);
       } else {
-        const j2 = 80 - j;
-        Th = 7 * j2 / 16 - 4 * sini80 - erMul * alpha * Math.sin((10 - j2) * Math.PI / 20);
+        // ι: mirror of η about j=40, signs of the constant + α-term flipped
+        Th = 7 * j / 16 + 4 * sini80 + erMul * alpha * Math.sin((j - 70) * Math.PI / 20);
       }
       // ---- K ----
       const K = hMul * 3 * Math.sin((i + 10) * Math.PI / 20)
@@ -699,7 +697,10 @@ function buildGnocchi(v) {
 
 function buildRotelle(v) {
   // Legendre, Pasta by Design, p.152.  Rotelle is two co-extruded curves,
-  // both vertically swept by K = j/5 over j ∈ [0, 5].
+  // both vertically swept by K = j/5 over j ∈ [0, 5].  The book defines the
+  // pasta as zero-thickness sheets; we thicken each curve into a closed
+  // rectangular tube of cross-section (pasta thickness × depth) so the
+  // spokes and rim look like real solid pasta.
   //
   //   inner (i ∈ [0, 2000]):
   //     Π = 0.5·cos(iπ/1000) + 1.5·sin(3iπ/1000)^50 · cos(iπ/1000)
@@ -708,48 +709,69 @@ function buildRotelle(v) {
   //     T = 2.05·cos(3iπ/1000) + 0.03·cos(91iπ/1000)
   //     X = 2.05·sin(3iπ/1000) + 0.03·sin(93iπ/1000)
   //
-  // The inner curve is a hub of radius 0.5 with 6 needle spikes
-  // (sin(3iπ/1000)^50 peaks at six i-values over [0,2000]) reaching out
-  // to radius ~2.0.  The outer curve is one period of a 91/93-fold rippled
-  // circle of radius 2.05.  Both are vertically extruded into thin walls.
-  const ISTEPS_INNER = 1200;   // enough to resolve sin^50 spikes
+  // For each curve we sample (px(i), py(i)) and a unit in-plane normal
+  // (nx(i), ny(i)) perpendicular to the curve's tangent.  The cross-section
+  // walks the perimeter of a [-t/2, t/2] × [0, h] rectangle with parameter
+  // s ∈ [0, 1].  Mesh dim is ISTEPS × CROSS_STEPS, wraps in the curve param.
+  const ISTEPS_INNER = 1500;
   const ISTEPS_OUTER = 600;
-  const JSTEPS = 4;
+  const CROSS_STEPS = 16;
   const se = Math.round(v.ro_se);
-  const sl = v.ro_sl, rr = v.ro_rr, h = v.ro_h;
+  const sl = v.ro_sl, rr = v.ro_rr, t = v.ro_t, h = v.ro_h;
+  const halfT = 0.5 * t;
 
-  const inner = [];
-  for (let ii = 0; ii <= ISTEPS_INNER; ii++) {
-    const i = (ii / ISTEPS_INNER) * 2000;
+  const innerCurve = (i) => {
     const a = i * Math.PI / 1000;
     const spike = Math.pow(Math.sin(3 * i * Math.PI / 1000), se);
     const r = 0.5 + sl * spike;
-    const px = r * Math.cos(a);
-    const py = r * Math.sin(a);
-    for (let jj = 0; jj <= JSTEPS; jj++) {
-      const j = (jj / JSTEPS) * 5;
-      const k = h * (j / 5);
-      inner.push(px, k, py);
-    }
-  }
+    return { x: r * Math.cos(a), y: r * Math.sin(a) };
+  };
+  const outerCurve = (i) => {
+    return {
+      x: 2.05 * Math.cos(3 * i * Math.PI / 1000) + rr * Math.cos(91 * i * Math.PI / 1000),
+      y: 2.05 * Math.sin(3 * i * Math.PI / 1000) + rr * Math.sin(93 * i * Math.PI / 1000),
+    };
+  };
 
-  const outer = [];
-  for (let ii = 0; ii <= ISTEPS_OUTER; ii++) {
-    // i ∈ [0, 666]; book uses if(i ≤ 666, expr, 0) — we just walk that range.
-    const i = (ii / ISTEPS_OUTER) * 666;
-    const px = 2.05 * Math.cos(3 * i * Math.PI / 1000) + rr * Math.cos(91 * i * Math.PI / 1000);
-    const py = 2.05 * Math.sin(3 * i * Math.PI / 1000) + rr * Math.sin(93 * i * Math.PI / 1000);
-    for (let jj = 0; jj <= JSTEPS; jj++) {
-      const j = (jj / JSTEPS) * 5;
-      const k = h * (j / 5);
-      outer.push(px, k, py);
+  // Walk the rectangle perimeter once: s ∈ [0,1], output (n, k) where
+  //   n ∈ [-1, 1] is offset along in-plane normal (× halfT)
+  //   k ∈ [0, 1] is height fraction (× h)
+  const crossSection = (s) => {
+    if (s < 0.25)      { const a = s / 0.25;        return { n: -1 + 2*a, k: 0 }; }    // bottom (-n → +n at k=0)
+    else if (s < 0.5)  { const a = (s - 0.25)/0.25; return { n: +1,       k: a }; }    // right (+n side, k 0→1)
+    else if (s < 0.75) { const a = (s - 0.5) /0.25; return { n: +1 - 2*a, k: 1 }; }    // top  (+n → -n at k=1)
+    else               { const a = (s - 0.75)/0.25; return { n: -1,       k: 1 - a }; } // left (-n side, k 1→0)
+  };
+
+  const buildTube = (curveFn, iMax, ISTEPS) => {
+    const verts = [];
+    // Pre-sample positions and tangents (numerical) to compute normals.
+    const eps = iMax * 1e-4;
+    for (let ii = 0; ii < ISTEPS; ii++) {  // < not <= : last col wraps via wrap_i
+      const i = (ii / ISTEPS) * iMax;
+      const p  = curveFn(i);
+      const p1 = curveFn(i + eps);
+      let tx = p1.x - p.x, ty = p1.y - p.y;
+      const tm = Math.hypot(tx, ty) || 1;
+      tx /= tm; ty /= tm;
+      // In-plane normal (90° rotation of tangent in xy).
+      const nx = -ty, ny = tx;
+      for (let cc = 0; cc <= CROSS_STEPS; cc++) {
+        const s = cc / CROSS_STEPS;
+        const { n, k } = crossSection(s);
+        const X = p.x + n * halfT * nx;
+        const Z = p.y + n * halfT * ny;
+        const Y = k * h;
+        verts.push(X, Y, Z);
+      }
     }
-  }
+    return { ISTEPS, JSTEPS: CROSS_STEPS, verts, wrap_i: true };
+  };
 
   return {
     meshes: [
-      { ISTEPS: ISTEPS_INNER, JSTEPS, verts: inner },
-      { ISTEPS: ISTEPS_OUTER, JSTEPS, verts: outer, flip_winding: true },
+      buildTube(innerCurve, 2000, ISTEPS_INNER),
+      buildTube(outerCurve, 666,  ISTEPS_OUTER),
     ],
   };
 }
