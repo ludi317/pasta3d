@@ -81,7 +81,7 @@
   <div class="shape-group" data-shape="penne">
     <h2>Penne</h2>
     <div class="row"><label>radius: <span class="val" id="v-pe_r"></span></label>
-      <input type="range" id="pe_r" min="0.3" max="2" step="0.01" value="0.9"></div>
+      <input type="range" id="pe_r" min="0.3" max="2" step="0.01" value="0.51"></div>
     <div class="row"><label>length: <span class="val" id="v-pe_L"></span></label>
       <input type="range" id="pe_L" min="1" max="8" step="0.05" value="4"></div>
     <div class="row"><label>cut angle (rad): <span class="val" id="v-pe_a"></span></label>
@@ -123,16 +123,16 @@
   <!-- Gemelli -->
   <div class="shape-group" data-shape="gemelli">
     <h2>Gemelli</h2>
-    <div class="row"><label>length: <span class="val" id="v-ge_L"></span></label>
-      <input type="range" id="ge_L" min="2" max="10" step="0.05" value="6"></div>
-    <div class="row"><label>strand offset: <span class="val" id="v-ge_o"></span></label>
-      <input type="range" id="ge_o" min="0.2" max="1.5" step="0.005" value="0.55"></div>
-    <div class="row"><label>strand radius: <span class="val" id="v-ge_r"></span></label>
-      <input type="range" id="ge_r" min="0.1" max="0.8" step="0.005" value="0.35"></div>
-    <div class="row"><label>twist (turns): <span class="val" id="v-ge_t"></span></label>
-      <input type="range" id="ge_t" min="0.5" max="6" step="0.05" value="2.2"></div>
-    <div class="row"><label>taper: <span class="val" id="v-ge_tp"></span></label>
-      <input type="range" id="ge_tp" min="0" max="0.6" step="0.01" value="0.2"></div>
+    <div class="row"><label>tube radius (Π/Θ): <span class="val" id="v-ge_r"></span></label>
+      <input type="range" id="ge_r" min="2" max="10" step="0.05" value="6"></div>
+    <div class="row"><label>tube height (K): <span class="val" id="v-ge_h"></span></label>
+      <input type="range" id="ge_h" min="2" max="14" step="0.05" value="6"></div>
+    <div class="row"><label>twist coef: <span class="val" id="v-ge_tw"></span></label>
+      <input type="range" id="ge_tw" min="1" max="6" step="0.05" value="2"></div>
+    <div class="row"><label>climb rate: <span class="val" id="v-ge_cl"></span></label>
+      <input type="range" id="ge_cl" min="0" max="2" step="0.01" value="0.75"></div>
+    <div class="row"><label>opening (× π): <span class="val" id="v-ge_op"></span></label>
+      <input type="range" id="ge_op" min="1" max="2" step="0.005" value="1.9"></div>
   </div>
 
   <!-- Mafaldine -->
@@ -256,7 +256,7 @@ const SHAPE_PARAMS = {
   penne:       ['pe_r','pe_L','pe_a','pe_rn','pe_ra'],
   farfalle:    ['fa_pa','fa_wf','fa_er','fa_h'],
   macaroni:    ['ma_R','ma_r','ma_arc','ma_rn','ma_ra'],
-  gemelli:     ['ge_L','ge_o','ge_r','ge_t','ge_tp'],
+  gemelli:     ['ge_r','ge_h','ge_tw','ge_cl','ge_op'],
   mafaldine:   ['mf_jmax','mf_amp','mf_band','mf_thk'],
   gnocchi:     ['gn_sweep','gn_re','gn_be','gn_h'],
   spaghetti:   ['sp_L','sp_r','sp_sag','sp_wa','sp_wf','sp_wp'],
@@ -266,10 +266,10 @@ const SHAPE_PARAMS = {
 const DEFAULTS = {
   fu_imax: 200, fu_r: 6, fu_bow: 2.5, fu_tw: 3, fu_cl: 0.15,
   ca_tr: 2.0, ca_ra: 0.1, ca_cl: 0.167, ca_jmax: 150,
-  pe_r: 0.9, pe_L: 4, pe_a: 0.6, pe_rn: 14, pe_ra: 0.04,
+  pe_r: 0.51, pe_L: 4, pe_a: 0.6, pe_rn: 14, pe_ra: 0.04,
   fa_pa: 1.0, fa_wf: 1.0, fa_er: 1.0, fa_h: 1.0,
   ma_R: 1.6, ma_r: 0.45, ma_arc: 2.0, ma_rn: 0, ma_ra: 0.05,
-  ge_L: 6, ge_o: 0.55, ge_r: 0.35, ge_t: 2.2, ge_tp: 0.2,
+  ge_r: 6, ge_h: 6, ge_tw: 2, ge_cl: 0.75, ge_op: 1.9,
   mf_jmax: 150, mf_amp: 1.0, mf_band: 6, mf_thk: 0.5,
   gn_sweep: 1.3, gn_re: 1.0, gn_be: 1.0, gn_h: 1.0,
   sp_L: 12, sp_r: 0.18, sp_sag: 0.6, sp_wa: 0.25, sp_wf: 1.4, sp_wp: 1.0,
@@ -516,38 +516,34 @@ function buildMacaroni(v) {
 }
 
 function buildGemelli(v) {
-  // Two tubes that wind around each other along a shared axis.
-  const ISTEPS = 320, JSTEPS = 24;
-  const L = v.ge_L, off = v.ge_o, r = v.ge_r, turns = v.ge_t, taper = v.ge_tp;
-  const meshes = [];
-  for (let k = 0; k < 2; k++) {
-    const verts = [];
-    for (let i = 0; i <= ISTEPS; i++) {
-      const u = i / ISTEPS;
-      const t = u * L - L / 2;
-      const ang = 2 * Math.PI * turns * u + k * Math.PI;
-      const ca = Math.cos(ang), sa = Math.sin(ang);
-      const gx = off * ca, gy = t, gz = off * sa;
-      const w = 2 * Math.PI * turns / L;
-      let Tx = -off * sa * w, Ty = 1, Tz = off * ca * w;
-      let Tm = Math.hypot(Tx, Ty, Tz); Tx/=Tm; Ty/=Tm; Tz/=Tm;
-      const Nx = -ca, Ny = 0, Nz = -sa;
-      let Bx = Ty*Nz - Tz*Ny, By = Tz*Nx - Tx*Nz, Bz = Tx*Ny - Ty*Nx;
-      let Bm = Math.hypot(Bx, By, Bz); Bx/=Bm; By/=Bm; Bz/=Bm;
-      const ends = 4 * u * (1 - u);
-      const rEff = r * (1 - taper * (1 - ends));
-      for (let j = 0; j <= JSTEPS; j++) {
-        const theta = (2 * Math.PI * j) / JSTEPS;
-        const cT = Math.cos(theta), sT = Math.sin(theta);
-        const x = gx + rEff * (cT * Nx + sT * Bx);
-        const y = gy + rEff * (cT * Ny + sT * By);
-        const z = gz + rEff * (cT * Nz + sT * Bz);
-        verts.push(x, y, z);
-      }
+  // Legendre, Pasta by Design.  Domain (i,j) ∈ [0, 100] × [0, 50].
+  //
+  //   Π = R·cos((j/50)·op·π + 0.55π) · cos(tw·i·π/25)
+  //   Θ = R·cos((j/50)·op·π + 0.55π) · sin(tw·i·π/25)
+  //   K = H·sin((j/50)·op·π + 0.55π) + cl·i
+  //
+  // i parameterizes a helical sweep around the K axis (tw=3 → 6 turns over
+  // i ∈ [0, 100]); j parameterizes the tube cross-section that opens slightly
+  // (op = 1.9 → 1.9π sweep, leaving a 0.1π seam — gives the twin-strand look).
+  // Book canonical: R=6, H=8, tw=3, cl=3/4, op=1.9.
+  const ISTEPS = 600, JSTEPS = 60;
+  const R = v.ge_r, H = v.ge_h, tw = v.ge_tw, cl = v.ge_cl, op = v.ge_op;
+  const verts = [];
+  for (let ii = 0; ii <= ISTEPS; ii++) {
+    const i = (ii / ISTEPS) * 100;
+    const ang = tw * i * Math.PI / 25;
+    const ca = Math.cos(ang), sa = Math.sin(ang);
+    for (let jj = 0; jj <= JSTEPS; jj++) {
+      const j = (jj / JSTEPS) * 50;
+      const phase = (j / 50) * op * Math.PI + 0.55 * Math.PI;
+      const cp = Math.cos(phase), sp = Math.sin(phase);
+      const Pi = R * cp * ca;
+      const Th = R * cp * sa;
+      const K  = H * sp + cl * i;
+      verts.push(Pi, K, Th);
     }
-    meshes.push({ ISTEPS, JSTEPS, verts });
   }
-  return { meshes };
+  return { meshes: [{ ISTEPS, JSTEPS, verts }] };
 }
 
 function buildMafaldine(v) {
