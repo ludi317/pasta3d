@@ -17,20 +17,23 @@ Open `index.html` in any modern browser. No build step.
 
 ## Shapes
 
-Ported from from George L. Legendre's *Pasta by Design*
+Ported from George L. Legendre's *Pasta by Design*
 (Thames & Hudson, 2011):
 
 - **Fusilli** — single-blade helicoid (rotating, climbing bowed bar)
-- **Cavatappi** — toroidal tube with 7-fold ribbing, helical climb 
+- **Cavatappi** — toroidal tube with 7-fold ribbing, helical climb
 - **Farfalle** — bowtie with central pinch and crenellated edges
+- **Gemelli** — single tube swept helically with a small open seam
 - **Gnocchi** — semi-open ridged shell
-- **Mafaldine** — flat ribbon with rippled long edges (but thickened)
-- **Rotelle** — wagon-wheel: 6-spoke hub + 91/93-rippled rim (but thickened)
+- **Lasagna** — flat ribbon with opposite-phase rippled long edges
+- **Rotelle** — wagon-wheel: hub ring + N straight spokes + rippled rim
 
 Hand-built parameterizations (not from the book):
 
 - **Penne** — cylinder cut by parallel oblique planes, with rigate ridges
 - **Macaroni** — bent tube on a planar arc
-- **Gemelli** — two tubes winding around a shared axis
 - **Spaghetti** — drooping/wobbling tube swept by Frenet frame
+
+Most shapes have a `thickness` slider that converts the surface into a
+true hollow tube or thickened slab.
 
