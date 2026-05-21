@@ -2,7 +2,8 @@
 # pasta3d
 
 Interactive 3D parametric pasta viewer with live sliders. Ten shapes.
-<img width="1070" height="751" alt="Screenshot 2026-05-19 at 8 08 16 PM" src="https://github.com/user-attachments/assets/c2dde933-1177-456b-a8bf-cc70494ac64c" />
+<img width="1190" height="766" alt="Screenshot 2026-05-20 at 7 07 09 PM" src="https://github.com/user-attachments/assets/a3ce20da-1104-4626-9dcf-ed0e7cb93ae7" />
+
 
 ## Run
 
